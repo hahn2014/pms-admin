@@ -1,0 +1,8 @@
+.env
+.db
+
+.DS_Store
+.ds_store
+.DS_store
+
+mock_usb/
