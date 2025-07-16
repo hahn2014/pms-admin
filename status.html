@@ -2,9 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMS Admin - Movie Picker</title>
+    <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+    <link rel="stylesheet" href="stylesheet/main.css">
+    <link rel="stylesheet" href="stylesheet/movie-picker.css">
+    <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
 </head>
 <body>
+    <div id="main-container" class="main-container">
+        <header>
+            <div class="logo" onclick="navigate('home')">
+                <img src="resources/logo.jpg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+            </div>
+            <nav id="nav-menu" class="nav-menu">
+                <button onclick="navigate('file-explorer')">File Explorer</button>
+                <button onclick="navigate('nas-stats')">NAS Stats</button>
+                <button onclick="navigate('help')">Help</button>
+                <button onclick="logout()">Logout</button>
+            </nav>
+        </header>
+    </div>
 
+    <footer>
+        <span>Developed by HahnSolo. 1.0 update July 2025</span>
+        <button id="dark-mode-toggle" aria-label="Switch to dark mode">
+            <i class="fas fa-sun"></i> Switch to Dark Mode
+        </button>
+    </footer>
 </body>
+<script src="src/client.js"></script>
+<script src="src/dark-mode.js"></script>
 </html>
