@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMS Admin - Movie Picker</title>
+    <title>PMS Admin - Server Status</title>
     <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
     <link rel="stylesheet" href="stylesheet/main.css">
-    <link rel="stylesheet" href="stylesheet/movie-picker.css">
+    <link rel="stylesheet" href="stylesheet/status.css">
     <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
 </head>
 <body>
@@ -17,13 +17,37 @@
             </div>
             <nav id="nav-menu" class="nav-menu">
                 <button onclick="navigate('file-explorer')">File Explorer</button>
-                <button onclick="navigate('nas-stats')">NAS Stats</button>
+                <button onclick="navigate('movie-pick')">Movie Picker</button>
                 <button onclick="navigate('help')">Help</button>
                 <button onclick="logout()">Logout</button>
             </nav>
         </header>
+        <div class="main-body">
+            <h1 class="centered-header">Server Status</h1>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <h3 id="plex-header">Plex Media Server</h3>
+                    <p id="plex-label">no plex media server daemon was found</p>
+                </div>
+                <div class="grid-item">
+                    <h3 id="tautulli-header">Tautulli</h3>
+                    <p id="tautulli-label">no tautulli daemon was found</p>
+                </div>
+                <div class="grid-item">
+                    <h3 id="overseer-header">Overseer</h3>
+                    <p id="overseer-label">no overseer daemon was found</p>
+                </div>
+                <div class="grid-item">
+                    <h3 id="cloudflared-header">Cloudflared</h3>
+                    <p id="cloudflared-label">no cloudflared daemon was found</p>
+                </div>
+                <div class="grid-item">
+                    <h3 id="usb-header">Hard Drive Status</h3>
+                    <p id="usb-label">no hard drives found</p>
+                </div>
+            </div>
+        </div>
     </div>
-
     <footer>
         <span>Developed by HahnSolo. 1.0 update July 2025</span>
         <button id="dark-mode-toggle" aria-label="Switch to dark mode">
@@ -33,4 +57,5 @@
 </body>
 <script src="src/client.js"></script>
 <script src="src/dark-mode.js"></script>
+<script src="src/status.js"></script>
 </html>

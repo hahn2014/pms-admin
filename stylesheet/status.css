@@ -1,0 +1,9 @@
+.centered-header {
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.grid-container h3 {
+    text-align: left;
+    padding-bottom: 15px;
+}

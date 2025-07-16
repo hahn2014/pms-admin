@@ -74,6 +74,8 @@ function navigate(page) {
         window.location.href = 'movie-picker.html';
     } else if (page === 'media-list') {
         window.location.href = 'media-list.html';
+    } else if (page === 'server-status') {
+        window.location.href = 'status.html';
     } else {
         alert(`Navigating to ${page}`);
         const navMenu = document.getElementById('nav-menu');
