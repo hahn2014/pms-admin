@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PMS Admin - File Explorer</title>
+  <link rel="stylesheet" href="stylesheet/main.css">
+  <link rel="stylesheet" href="stylesheet/file-explorer.css">
+  <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
+  <script src="src/client.js"></script>
+  <script src="src/file-explorer.js"></script>
+  <script src="src/dark-mode.js"></script>
+</head>
+<body>
+<header>
+  <div class="logo" onclick="navigate('home')">
+    <img src="resources/logo.jpg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+  </div>
+  <div class="welcome-message">
+    <span id="welcome-text">Welcome <span id="username-display"></span>. PMS Admin</span>
+  </div>
+  <nav id="nav-menu" class="nav-menu">
+    <button onclick="navigate('movie-pick')">Movie Picker</button>
+    <button onclick="navigate('nas-stats')">NAS Stats</button>
+    <button onclick="navigate('help')">Help</button>
+    <button onclick="logout()">Logout</button>
+  </nav>
+</header>
+<main>
+  <div class="file-explorer" id="file-explorer" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" data-path="/usb">
+    <h2>File Explorer</h2>
+    <div class="file-explorer-actions">
+      <button class="action-button" onclick="showNewDirectoryPrompt()">
+        <span class="icon">➕</span> New Directory
+      </button>
+      <button class="action-button" id="upload-button" onclick="showFileUploadPrompt()">
+        <span class="icon">📤</span> File Upload
+      </button>
+    </div>
+    <div class="upload-progress hidden" id="upload-progress">
+      <progress id="progress-bar" value="0" max="100"></progress>
+      <span id="progress-text">Uploading... 0%</span>
+    </div>
+    <div class="notification hidden" id="notification"></div>
+    <div class="path-breadcrumbs" id="breadcrumb-path"></div>
+    <div class="file-list"></div>
+    <p class="centered-text">Drop a File in the panel to upload to NAS server</p>
+  </div>
+
+  <div class="prompt-overlay hidden" id="prompt-overlay">
+    <div class="prompt-box">
+      <h3 id="prompt-title">Prompt</h3>
+      <p id="prompt-message"></p>
+      <div id="prompt-input" class="input-group hidden">
+        <input type="text" id="prompt-textbox" placeholder="">
+      </div>
+      <p id="prompt-error" class="error-message"></p>
+      <div class="prompt-buttons">
+        <button id="prompt-confirm">Confirm</button>
+        <button id="prompt-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-overlay hidden" id="preview-overlay">
+    <div class="preview-box">
+      <button class="close-preview" onclick="hidePreview()">✖</button>
+      <div class="preview-content" id="preview-content"></div>
+    </div>
+  </div>
+</main>
+<footer>
+  <div>Developed by HahnSolo. 1.0 update July 2025</div>
+  <button id="dark-mode-toggle">
+    <span class="icon">🌙</span> Switch to Dark Mode
+  </button>
+</footer>
+</body>
+</html>

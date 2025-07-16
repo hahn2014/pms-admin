@@ -1,0 +1,161 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+h1 {
+    color: #007bff;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+.movie-panel {
+    background-color: var(--item-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.movie-poster {
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0; /* Prevent image from resizing */
+}
+
+.movie-details {
+    flex: 1;
+    text-align: left;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align to top of text block */
+    margin-bottom: 0.5rem;
+}
+
+.movie-title {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--text-color);
+    max-width: 70%; /* Limit title width to prevent overlap with button */
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2; /* Control line height for 3-line limit */
+}
+
+.plex-stream {
+    background-color: #cf7a06;
+    color: black;
+    font-size: 1rem;
+    font-weight: 900;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevent button from shrinking */
+    align-self: flex-start; /* Align button to the top */
+}
+
+.plex-stream:hover {
+    background-color: #9a5c07;
+}
+
+.movie-year, .movie-runtime, .movie-rating, .movie-id {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin: 0.5rem 0;
+}
+
+.movie-synopsis {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin: 0.5rem 0;
+}
+
+.pick-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pick-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.tmdb-credit {
+    margin-top: 100px;
+}
+
+.tmdb-logo {
+    width: 40%;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .movie-panel {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .movie-poster {
+        width: 150px;
+        height: 225px;
+    }
+
+    .movie-details {
+        text-align: center;
+    }
+
+    .title-container {
+        flex-direction: column; /* Stack title and button on mobile */
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .movie-title {
+        font-size: 1.5rem;
+        max-width: 100%; /* Allow full width on mobile */
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Maintain 3-line limit on mobile */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+
+    .plex-stream {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .movie-year, .movie-runtime, .movie-rating, .movie-id {
+        font-size: 1rem;
+    }
+
+    .pick-button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}

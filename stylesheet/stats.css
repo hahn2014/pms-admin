@@ -1,0 +1,102 @@
+.view {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+#toggleView {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    max-width: 100%;
+    width: calc(100% - 40px);
+    margin: 20px auto;
+    box-sizing: border-box;
+}
+
+.chart-wrapper {
+    max-width: 100%;
+    width: 100%;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+canvas {
+    width: 100% !important;
+    height: 250px !important;
+    max-width: 400px;
+    max-height: 250px;
+}
+
+#tableView {
+    display: flex;
+    justify-content: center;
+}
+
+#tableView table {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+#tableView th, #tableView td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#tableView tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#tableView th {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.centered-header {
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+
+
+/* Mobile Formatting */
+
+@media (max-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    canvas {
+        max-width: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    canvas {
+        max-width: 100%;
+        max-height: 200px;
+        height: 200px !important;
+    }
+    #tableView {
+        overflow-x: auto;
+    }
+    .centered-header {
+        font-size: 1.5rem;
+    }
+    #toggleView {
+        font-size: 0.9rem;
+    }
+}

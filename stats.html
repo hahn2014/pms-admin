@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PMS Admin - NAS Statistics</title>
+        <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+        <link rel="stylesheet" href="stylesheet/main.css">
+        <link rel="stylesheet" href="stylesheet/stats.css">
+        <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
+    </head>
+    <body>
+        <div id="main-container" class="main-container">
+            <header>
+                <div class="logo" onclick="navigate('home')">
+                    <img src="resources/logo.jpg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+                </div>
+                <div class="welcome-message">
+                    <span id="welcome-text">Welcome <span id="username-display"></span>. PMS Admin</span>
+                </div>
+                <nav id="nav-menu" class="nav-menu">
+                    <button onclick="navigate('file-explorer')">File Explorer</button>
+                    <button onclick="navigate('movie-pick')">Movie Picker</button>
+                    <button onclick="navigate('help')">Help</button>
+                    <button onclick="logout()">Logout</button>
+                </nav>
+            </header>
+
+            <h1 class="centered-header" id="headertxt">Media and Storage Analytics - Bar Graph Data</h1>
+            <button id="toggleView">Switch to Raw Data</button>
+            <div id="graphView" class="view">
+                <div class="charts-grid">
+                    <div class="chart-wrapper">
+                        <canvas id="storageChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="mediaTypeChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="totalFilesChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="freeSpaceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div id="tableView" class="view hidden">
+                <table>
+                    <!-- Table content will be populated dynamically -->
+                </table>
+            </div>
+
+        <footer>
+            <span>Developed by HahnSolo. 1.0 update July 2025</span>
+            <button id="dark-mode-toggle" aria-label="Switch to dark mode">
+                <i class="fas fa-sun"></i> Switch to Dark Mode
+            </button>
+        </footer>
+
+
+        <script src="/include/chart.umd.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+        <script src="src/client.js"></script>
+        <script src="src/stats.js"></script>
+        <script src="src/dark-mode.js"></script>
+    </body>
+</html>

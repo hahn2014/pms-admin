@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMS Admin</title>
+    <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+    <link rel="stylesheet" href="stylesheet/main.css">
+    <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
+  </head>
+
+  <body>
+    <div id="login-container" class="login-container">
+      <div class="login-box">
+        <h2>Login to PMS Admin</h2>
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter username">
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="password-container">
+            <input type="password" id="password" placeholder="Enter password">
+            <button id="toggle-password" onclick="togglePassword()">Show</button>
+          </div>
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="error-message" class="error-message"></div>
+      </div>
+    </div>
+
+    <div id="main-container" class="hidden">
+      <header>
+        <div class="logo" onclick="navigate('home')">
+          <img src="resources/logo.jpg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+        </div>
+        <div class="welcome-message">
+          <span id="welcome-text">Welcome <span id="username-display">user</span>. PMS Admin</span>
+        </div>
+        <nav id="nav-menu" class="nav-menu"></nav>
+      </header>
+
+      <main>
+        <div class="grid-container">
+          <div class="grid-item" onclick="navigate('file-explorer')">
+            <h3>File Explorer</h3>
+            <p>Browse and manage files on your NAS.</p>
+          </div>
+          <div class="grid-item" onclick="navigate('nas-stats')">
+            <h3>NAS Stats</h3>
+            <p>View performance and storage analytics.</p>
+          </div>
+          <div class="grid-item" onclick="navigate('movie-pick')">
+            <h3>Pick a Movie</h3>
+            <p>Get a randomly picked movie recommendation to watch on Plex.</p>
+          </div>
+          <div class="grid-item" onclick="navigate('media-list')">
+            <h3>Media List</h3>
+            <p>View a table of all movies, TV shows, and songs stored on the NAS server.</p>
+          </div>
+          <div class="grid-item" onclick="navigate('help')">
+            <h3>Help</h3>
+            <p>Access documentation and support.</p>
+          </div>
+          <div class="grid-item" onclick="logout()">
+            <h3>Logout</h3>
+            <p>End your session.</p>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <span>Developed by HahnSolo. 1.0 update July 2025</span>
+        <button id="dark-mode-toggle" aria-label="Switch to dark mode">
+          <i class="fas fa-sun"></i> Switch to Dark Mode
+        </button>
+      </footer>
+    </div>
+
+    <script src="src/client.js"></script>
+    <script src="src/dark-mode.js"></script>
+  </body>
+</html>

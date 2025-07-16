@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PMS Admin - Media List</title>
+  <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+  <link rel="stylesheet" href="stylesheet/main.css">
+  <link rel="stylesheet" href="stylesheet/media-list.css">
+  <script src="src/client.js" defer></script>
+  <script src="src/dark-mode.js" defer></script>
+  <script src="src/media-list.js" defer></script>
+</head>
+<body>
+<div id="main-container" class="main-container">
+  <header>
+    <div class="logo" onclick="navigate('home')">
+      <img src="resources/logo.jpg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+    </div>
+    <div class="welcome-message">
+      <span id="welcome-text">Welcome <span id="username-display"></span>. PMS Admin</span>
+    </div>
+    <nav id="nav-menu" class="nav-menu">
+      <button onclick="navigate('file-explorer')">File Explorer</button>
+      <button onclick="navigate('movie-pick')">Movie Picker</button>
+      <button onclick="navigate('help')">Help</button>
+      <button onclick="logout()">Logout</button>
+    </nav>
+  </header>
+
+  <h1 class="centered-header" id="headertxt">Media List</h1>
+  <div class="tab-container">
+    <div class="tab-buttons">
+      <button class="tab-button active" onclick="switchTab('movies')">
+        <span class="tab-icon">🎬</span> Movies
+      </button>
+      <button class="tab-button" onclick="switchTab('tv_shows')">
+        <span class="tab-icon">📺</span> TV Shows
+      </button>
+      <button class="tab-button" onclick="switchTab('songs')">
+        <span class="tab-icon">🎵</span> Songs
+      </button>
+      <button class="refresh-button" id="refresh-media" onclick="refreshMediaList()">Refresh Media List</button>
+    </div>
+    <div class="tab-indicator"></div>
+    <div class="tab-content">
+      <div class="tab-pane active" id="movies-tab">
+        <div class="table-wrapper">
+          <div class="table-container">
+            <table id="movies-table">
+              <thead>
+              <tr>
+                <th>Title</th>
+                <th>Release Year</th>
+                <th>Drive</th>
+                <th>File Path</th>
+                <th>Size</th>
+                <th>Extension</th>
+              </tr>
+              </thead>
+              <tbody id="movies-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tv_shows-tab">
+        <div class="table-wrapper">
+          <div class="table-container">
+            <table id="tv_shows-table">
+              <thead>
+              <tr>
+                <th>Show Title</th>
+                <th>Season</th>
+                <th>Episode</th>
+                <th>Episode Title</th>
+                <th>Release Year</th>
+                <th>Drive</th>
+                <th>File Path</th>
+                <th>Size</th>
+                <th>Extension</th>
+              </tr>
+              </thead>
+              <tbody id="tv_shows-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="songs-tab">
+        <div class="table-wrapper">
+          <div class="table-container">
+            <table id="songs-table">
+              <thead>
+              <tr>
+                <th>Song Title</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Release Year</th>
+                <th>Drive</th>
+                <th>File Path</th>
+                <th>Size</th>
+                <th>Extension</th>
+              </tr>
+              </thead>
+              <tbody id="songs-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="return-to-top" class="return-to-top hidden">Return to Top</button>
+</div>
+
+<footer>
+  <p>Developed by HahnSolo. 1.0 update July 2025</p>
+  <button id="dark-mode-toggle">Switch to Dark Mode</button>
+</footer>
+</body>
+</html>
