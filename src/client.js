@@ -1,3 +1,6 @@
+/**
+ * Handles user login by sending credentials to the server and managing session.
+ */
 function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -27,6 +30,9 @@ function login() {
         });
 }
 
+/**
+ * Toggles the visibility of the password input field.
+ */
 function togglePassword() {
     const passwordInput = document.getElementById('password');
     const toggleButton = document.getElementById('toggle-password');
@@ -39,6 +45,9 @@ function togglePassword() {
     }
 }
 
+/**
+ * Logs the user out by clearing session storage and redirecting to the index page.
+ */
 function logout() {
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('username');
@@ -46,6 +55,10 @@ function logout() {
     window.location.href = 'index.html';
 }
 
+/**
+ * Navigates to different pages based on the provided page parameter.
+ * @param {string} page - The page to navigate to.
+ */
 function navigate(page) {
     if (sessionStorage.getItem('isLoggedIn') !== 'true' || !sessionStorage.getItem('sessionToken')) {
         window.location.href = 'index.html';
@@ -68,6 +81,9 @@ function navigate(page) {
     }
 }
 
+/**
+ * Initializes the page, checks session, and sets up event listeners.
+ */
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
         const navMenu = document.getElementById('nav-menu');

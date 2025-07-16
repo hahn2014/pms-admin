@@ -1,3 +1,7 @@
+/**
+ * Initializes dark mode based on user preference or system settings.
+ * Sets up the toggle button to switch between light and dark modes.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const toggleButton = document.getElementById('dark-mode-toggle');
     const savedMode = localStorage.getItem('dark-mode');

@@ -1,8 +1,11 @@
 .env
-.db
+*.db
 
 .DS_Store
 .ds_store
 .DS_store
+.idea
 
 mock_usb/
+node_modules/
+include/

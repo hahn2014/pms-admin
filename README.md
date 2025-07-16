@@ -80,7 +80,7 @@ Before setting up PMS Admin, ensure you have the following:
 1. **Clone or Download the Repository**:
    - If using Git, clone the repository:
      ```bash
-     git clone https://github.com/HahnSolo/pms-admin.git
+     git clone https://github.com/Hahn2014/pms-admin.git
      ```
    - Alternatively, download the ZIP file from the repository and extract it.
 
@@ -132,6 +132,8 @@ The application requires a `.env` file to store sensitive configuration details,
    - In the project root directory, create a file named `.env`.
    - Example structure:
      ```
+     NODE_ENV=development
+     MEDIA_ROOT=/usb/
      TMDB_API_KEY=your_tmdb_api_key_here
      NAS_SERVER_URL=http://your-nas-server-ip:port
      PLEX_API_URL=http://your-plex-server-ip:32400
