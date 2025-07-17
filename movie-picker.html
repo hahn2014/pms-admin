@@ -7,6 +7,7 @@
   <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
   <link rel="stylesheet" href="stylesheet/main.css">
   <link rel="stylesheet" href="stylesheet/movie-picker.css">
+  <link rel="stylesheet" href="stylesheet/tooltip.css">
   <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
 </head>
 <body>
@@ -24,23 +25,28 @@
   </header>
 
   <div class="container">
-    <h1 class="centered-header">Pick a Random Movie</h1>
+    <button class="left-header pick-button tooltip" data-tooltip="Find Another Movie" onclick="pickRandomMovie()">
+      <span>Something Else </span>
+      <i class="fa-solid fa-repeat"></i>
+    </button>
     <div class="movie-panel">
       <img src="/resources/not-found.jpg" alt="Movie Poster" class="movie-poster">
       <div class="movie-details">
         <div class="title-container">
           <h2 class="movie-title">Select a movie...</h2>
-          <button class="plex-stream">Play on Plex</button>
+          <button class="plex-stream tooltip" data-tooltip="Play movie on Plex">
+            <span>Play on </span>
+            <img src="resources/plex.svg" alt="Plex Logo" class="plex-logo">
+          </button>
         </div>
         <p class="movie-year">Year: Unknown</p>
-        <p class="movie-id">TMDb ID: N/A</p>
+        <p class="movie-id tooltip" data-tooltip="Go to movie's TMDB page">TMDb ID: N/A</p>
         <p class="movie-runtime">Runtime: Unknown</p>
         <p class="movie-rating">Rating: Unknown</p>
         <p class="movie-synopsis">Synopsis not available.</p>
       </div>
     </div>
-    <button class="pick-button" onclick="pickRandomMovie()">Pick a Different Movie</button>
-    <div class="tmdb-credit">
+    <div class="tmdb-credit" onclick="location.href='https://www.themoviedb.org';">
       <h4 class="tmdb-credit-text">Images and metadata provided by</h4>
       <img src="resources/TMDB.svg" alt="TMDB Logo" class="tmdb-logo">
     </div>
@@ -57,5 +63,6 @@
   <script src="src/client.js"></script>
   <script src="src/movie-picker.js"></script>
   <script src="src/dark-mode.js"></script>
+  <script src="src/tooltip.js"></script>
 </body>
 </html>

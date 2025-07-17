@@ -7,10 +7,12 @@
   <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
   <link rel="stylesheet" href="stylesheet/main.css">
   <link rel="stylesheet" href="stylesheet/media-list.css">
+  <link rel="stylesheet" href="stylesheet/tooltip.css">
   <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
   <script src="src/client.js" defer></script>
   <script src="src/dark-mode.js" defer></script>
   <script src="src/media-list.js" defer></script>
+  <script src="src/tooltip.js" defer></script>
 </head>
 <body>
 <div id="main-container" class="main-container">
@@ -38,7 +40,7 @@
       <button class="tab-button" onclick="switchTab('songs')">
         <span class="tab-icon">🎵</span> Songs
       </button>
-      <button class="refresh-button" id="refresh-media" onclick="refreshMediaList()">Refresh Media List</button>
+      <button class="refresh-button tooltip" data-tooltip="Run NAS database update process" id="refresh-media" onclick="refreshMediaList()">Refresh Media List</button>
     </div>
     <div class="tab-indicator"></div>
     <div class="tab-content">

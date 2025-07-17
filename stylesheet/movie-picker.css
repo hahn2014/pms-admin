@@ -16,6 +16,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
+    padding-top: 30px;
     margin-bottom: 1.5rem;
     display: flex;
     align-items: flex-start;
@@ -58,7 +59,7 @@ h1 {
 .plex-stream {
     background-color: #cf7a06;
     color: black;
-    font-size: 1rem;
+    font-size: 1.3rem;
     font-weight: 900;
     border: none;
     border-radius: 4px;
@@ -102,10 +103,24 @@ h1 {
 
 .tmdb-credit {
     margin-top: 100px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.tmdb-credit:hover {
+    transform: scale(1.05);
 }
 
 .tmdb-logo {
     width: 40%;
+}
+
+.plex-logo {
+    width: 20px;
+}
+
+.left-header {
+    text-align: left;
 }
 
 @media (max-width: 768px) {
