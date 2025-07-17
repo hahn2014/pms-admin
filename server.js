@@ -19,7 +19,7 @@ app.use((req, res, next) => {
     const requestedPath = path.basename(req.path);
     if (sensitiveFiles.includes(requestedPath)) {
         if (isDev) console.log(`[DEBUG] Blocked access to sensitive file: ${req.path}`);
-        return res.status(403).json({ error: 'Access to this file is forbidden' });
+        return sendError(res, 403, 'Access to this file is forbidden');
     }
     next();
 });
@@ -79,16 +79,27 @@ mediaDb.serialize(() => {
 
 // Session middleware for protected routes
 app.use((req, res, next) => {
-    if (req.path === '/' || req.path === '/index.html' || req.path === '/api/login' || req.path === '/api/stream') {
+    if (req.path === '/' || req.path === '/index.html' || req.path === '/api/login' || req.path === '/api/stream' || req.path === '/error.html') {
         if (isDev) console.log(`[DEBUG] Bypassing session check for path: ${req.path}`);
         return next();
     }
     const sessionToken = req.headers['x-session-token'];
     if (!sessionToken || !sessions.has(sessionToken)) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return sendError(res, 401, 'Unauthorized');
     }
     next();
 });
+
+/**
+ * Centralized error handling function to serve error.html with status and message.
+ * @param {Object} res - Express response object.
+ * @param {number} status - HTTP status code.
+ * @param {string} message - Error message to display.
+ */
+function sendError(res, status, message) {
+    if (isDev) console.log(`[DEBUG] Sending error: ${status} - ${message}`);
+    res.status(status).redirect(`/error.html?status=${status}&message=${encodeURIComponent(message)}`);
+}
 
 /**
  * Serves the TMDB API key for client-side use.
@@ -113,7 +124,7 @@ app.get('/api/check-session', (req, res) => {
     if (sessionToken && sessions.has(sessionToken)) {
         res.status(200).json({ valid: true });
     } else {
-        res.status(401).json({ error: 'Invalid session' });
+        sendError(res, 401, 'Invalid session');
     }
 });
 
@@ -125,12 +136,12 @@ app.get('/api/stream', async (req, res) => {
     const itemPath = req.query.path;
     const fullPath = getFullPath(itemPath);
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         const stats = await fs.stat(fullPath);
         if (!stats.isFile()) {
-            return res.status(400).json({ error: 'Requested path is not a file' });
+            return sendError(res, 400, 'Requested path is not a file');
         }
         const fileSize = stats.size;
         const range = req.headers.range;
@@ -163,7 +174,7 @@ app.get('/api/stream', async (req, res) => {
             fileStream.pipe(res);
         }
     } catch (error) {
-        res.status(500).json({ error: `Failed to stream file: ${error.message}` });
+        sendError(res, 500, `Failed to stream file: ${error.message}`);
     }
 });
 
@@ -176,7 +187,7 @@ app.get('/api/files', async (req, res) => {
     const requestedPath = req.query.path || '/usb';
     const fullPath = getFullPath(requestedPath);
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         await fs.access(fullPath);
@@ -185,7 +196,7 @@ app.get('/api/files', async (req, res) => {
         const folders = items.filter(item => item.isDirectory()).map(item => item.name);
         res.json({ files, folders });
     } catch (error) {
-        res.status(500).json({ error: `Failed to read directory: ${error.message}` });
+        sendError(res, 500, `Failed to read directory: ${error.message}`);
     }
 });
 
@@ -198,7 +209,7 @@ app.get('/api/file-info', async (req, res) => {
     const itemPath = req.query.path;
     const fullPath = getFullPath(itemPath);
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         const stats = await fs.stat(fullPath);
@@ -223,7 +234,7 @@ app.get('/api/file-info', async (req, res) => {
         await scanDir(fullPath);
         res.json({ fileCount, folderCount, size: totalSize });
     } catch (error) {
-        res.status(500).json({ error: `Failed to get file info: ${error.message}` });
+        sendError(res, 500, `Failed to get file info: ${error.message}`);
     }
 });
 
@@ -235,16 +246,16 @@ app.get('/api/download', async (req, res) => {
     const itemPath = req.query.path;
     const fullPath = getFullPath(itemPath);
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         const stats = await fs.stat(fullPath);
         if (!stats.isFile()) {
-            return res.status(400).json({ error: 'Requested path is not a file' });
+            return sendError(res, 400, 'Requested path is not a file');
         }
         res.download(fullPath);
     } catch (error) {
-        res.status(500).json({ error: `Failed to download file: ${error.message}` });
+        sendError(res, 500, `Failed to download file: ${error.message}`);
     }
 });
 
@@ -255,24 +266,24 @@ app.get('/api/download', async (req, res) => {
  */
 app.post('/api/upload', async (req, res) => {
     if (!req.body.path || !req.files || !req.files.file) {
-        return res.status(400).json({ error: 'Missing required parameters or file' });
+        return sendError(res, 400, 'Missing required parameters or file');
     }
     const dirPath = req.body.path;
     const file = req.files.file;
     const allowedExtensions = ['.mp4', '.mkv', '.mp3', '.avi', '.mov', '.flac', '.aac', '.wav'];
     const fileExt = path.extname(file.name).toLowerCase();
     if (!allowedExtensions.includes(fileExt)) {
-        return res.status(400).json({ error: 'Only media files allowed' });
+        return sendError(res, 400, 'Only media files allowed');
     }
     const fullPath = getFullPath(path.join(dirPath, file.name));
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         await file.mv(fullPath);
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: `Failed to upload file: ${error.message}` });
+        sendError(res, 500, `Failed to upload file: ${error.message}`);
     }
 });
 
@@ -315,7 +326,7 @@ app.get('/api/stats', async (req, res) => {
         });
         res.json({ drives: stats, totalFiles: stats.reduce((sum, d) => sum + d.totalFiles, 0), generatedDate: new Date().toISOString() });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch stats' });
+        sendError(res, 500, 'Failed to fetch stats');
     }
 });
 
@@ -333,7 +344,7 @@ app.get('/api/movies', async (req, res) => {
         });
         res.json({ movies });
     } catch (error) {
-        res.status(500).json({ error: `Failed to fetch movies: ${error.message}` });
+        sendError(res, 500, `Failed to fetch movies: ${error.message}`);
     }
 });
 
@@ -345,15 +356,15 @@ app.get('/api/media-list', async (req, res) => {
     try {
         const media = await new Promise((resolve, reject) => {
             mediaDb.all(`
-        SELECT m.id, m.type, m.file_path, m.drive, m.size, m.extension,
-               mov.title as movie_title, mov.release_year as movie_year,
-               tv.show_title, tv.release_year as tv_year, tv.season, tv.episode, tv.episode_title,
-               sng.artist, sng.album, sng.release_year as song_year, sng.song_title
-        FROM media m
-        LEFT JOIN movies mov ON m.id = mov.media_id
-        LEFT JOIN tv_shows tv ON m.id = tv.media_id
-        LEFT JOIN songs sng ON m.id = sng.media_id
-      `, (err, rows) => {
+                SELECT m.id, m.type, m.file_path, m.drive, m.size, m.extension,
+                       mov.title as movie_title, mov.release_year as movie_year,
+                       tv.show_title, tv.release_year as tv_year, tv.season, tv.episode, tv.episode_title,
+                       sng.artist, sng.album, sng.release_year as song_year, sng.song_title
+                FROM media m
+                         LEFT JOIN movies mov ON m.id = mov.media_id
+                         LEFT JOIN tv_shows tv ON m.id = tv.media_id
+                         LEFT JOIN songs sng ON m.id = sng.media_id
+            `, (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);
             });
@@ -384,7 +395,7 @@ app.get('/api/media-list', async (req, res) => {
         res.json({ media: formattedMedia });
     } catch (error) {
         if (isDev) console.error('[DEBUG] Error fetching media list:', error.message);
-        res.status(500).json({ error: `Failed to fetch media list: ${error.message}` });
+        sendError(res, 500, `Failed to fetch media list: ${error.message}`);
     }
 });
 
@@ -553,7 +564,7 @@ app.post('/api/refresh-media', async (req, res) => {
         res.status(200).json({ message: 'Media list refreshed successfully' });
     } catch (error) {
         if (isDev) console.error('[DEBUG] Error refreshing media list:', error.message);
-        res.status(500).json({ error: `Failed to refresh media list: ${error.message}` });
+        sendError(res, 500, `Failed to refresh media list: ${error.message}`);
     }
 });
 
@@ -564,18 +575,18 @@ app.post('/api/refresh-media', async (req, res) => {
  */
 app.post('/api/create-directory', async (req, res) => {
     if (!req.body.path || !req.body.name) {
-        return res.status(400).json({ error: 'Missing required parameters' });
+        return sendError(res, 400, 'Missing required parameters');
     }
     const { path: dirPath, name } = req.body;
     const fullPath = getFullPath(path.join(dirPath, name));
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         await fs.mkdir(fullPath, { recursive: true });
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: `Failed to create directory: ${error.message}` });
+        sendError(res, 500, `Failed to create directory: ${error.message}`);
     }
 });
 
@@ -587,19 +598,19 @@ app.post('/api/create-directory', async (req, res) => {
  */
 app.post('/api/rename', async (req, res) => {
     if (!req.body.path || !req.body.oldName || !req.body.newName) {
-        return res.status(400).json({ error: 'Missing required parameters' });
+        return sendError(res, 400, 'Missing required parameters');
     }
     const { path: dirPath, oldName, newName } = req.body;
     const oldPath = getFullPath(path.join(dirPath, oldName));
     const newPath = getFullPath(path.join(dirPath, newName));
     if (!isPathSafe(oldPath) || !isPathSafe(newPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         await fs.rename(oldPath, newPath);
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: `Failed to rename: ${error.message}` });
+        sendError(res, 500, `Failed to rename: ${error.message}`);
     }
 });
 
@@ -610,12 +621,12 @@ app.post('/api/rename', async (req, res) => {
  */
 app.post('/api/delete', async (req, res) => {
     if (!req.body.path || !req.body.name) {
-        return res.status(400).json({ error: 'Missing required parameters' });
+        return sendError(res, 400, 'Missing required parameters');
     }
     const { path: dirPath, name } = req.body;
     const fullPath = getFullPath(path.join(dirPath, name));
     if (!isPathSafe(fullPath)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return sendError(res, 403, 'Access denied');
     }
     try {
         const stats = await fs.stat(fullPath);
@@ -626,7 +637,7 @@ app.post('/api/delete', async (req, res) => {
         }
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: `Failed to delete: ${error.message}` });
+        sendError(res, 500, `Failed to delete: ${error.message}`);
     }
 });
 
@@ -638,7 +649,7 @@ app.post('/api/delete', async (req, res) => {
 app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
+        return sendError(res, 400, 'Username and password are required');
     }
     try {
         const existingUser = await new Promise((resolve, reject) => {
@@ -648,7 +659,7 @@ app.post('/api/register', async (req, res) => {
             });
         });
         if (existingUser) {
-            return res.status(409).json({ error: 'Username already exists' });
+            return sendError(res, 409, 'Username already exists');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         await new Promise((resolve, reject) => {
@@ -659,7 +670,7 @@ app.post('/api/register', async (req, res) => {
         });
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        sendError(res, 500, 'Internal server error');
     }
 });
 
@@ -672,7 +683,7 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
+        return sendError(res, 400, 'Username and password are required');
     }
     try {
         const user = await new Promise((resolve, reject) => {
@@ -682,13 +693,13 @@ app.post('/api/login', async (req, res) => {
             });
         });
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return sendError(res, 401, 'Invalid credentials');
         }
         const sessionToken = 'dev-token-' + Date.now(); // Consider UUID for production
         sessions.add(sessionToken);
         res.json({ sessionToken, username });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        sendError(res, 500, 'Internal server error');
     }
 });
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - PMS Admin</title>
+    <link rel="stylesheet" href="stylesheet/main.css">
+    <link rel="stylesheet" href="stylesheet/error.css">
+    <script src="src/client.js"></script>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="navigate('home')">
+        <img src="resources/logo.jpg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+    </div>
+</header>
+
+<img class="error-banner" src="resources/error-banner.gif" alt="Error Banner">
+
+<main class="error-container">
+    <h1 id="error-status">Error</h1>
+    <p id="error-message" class="error-message">An error occurred. Please try again or contact support.</p>
+    <button onclick="navigate('home')">Return to Home</button>
+</main>
+
+<footer>
+    <span>Developed by HahnSolo. 1.0 update July 2025</span>
+    <button id="dark-mode-toggle">Switch to Dark Mode</button>
+</footer>
+
+<script>
+    // Display error details from query parameters
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status') || 'Unknown';
+        const message = params.get('message') || 'An error occurred';
+        document.getElementById('error-status').textContent = `Error ${status}`;
+        document.getElementById('error-message').textContent = decodeURIComponent(message);
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        });
+
+        // Check session and update nav menu
+        if (sessionStorage.getItem('isLoggedIn') === 'true' && sessionStorage.getItem('sessionToken')) {
+            const navMenu = document.getElementById('nav-menu');
+            if (navMenu) navMenu.classList.remove('hidden');
+        }
+    });
+</script>
+</body>
+</html>
