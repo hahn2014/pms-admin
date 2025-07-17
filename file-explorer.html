@@ -6,6 +6,7 @@
   <title>PMS Admin - File Explorer</title>
   <link rel="stylesheet" href="stylesheet/main.css">
   <link rel="stylesheet" href="stylesheet/file-explorer.css">
+  <link rel="stylesheet" href="stylesheet/tooltip.css">
   <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
   <script src="src/client.js"></script>
   <script src="src/file-explorer.js"></script>
@@ -26,14 +27,6 @@
 <main>
   <div class="file-explorer" id="file-explorer" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" data-path="/usb">
     <h2>File Explorer</h2>
-    <div class="file-explorer-actions">
-      <button class="action-button" onclick="showNewDirectoryPrompt()">
-        <span class="icon">➕</span> New Directory
-      </button>
-      <button class="action-button" id="upload-button" onclick="showFileUploadPrompt()">
-        <span class="icon">📤</span> File Upload
-      </button>
-    </div>
     <div class="upload-progress hidden" id="upload-progress">
       <progress id="progress-bar" value="0" max="100"></progress>
       <span id="progress-text">Uploading... 0%</span>
@@ -41,7 +34,19 @@
     <div class="notification hidden" id="notification"></div>
     <div class="path-breadcrumbs" id="breadcrumb-path"></div>
     <div class="file-list"></div>
-    <p class="centered-text">Drop a File in the panel to upload to NAS server</p>
+    <div class="centered-text upload-info">
+      <div class="file-explorer-actions">
+        <button class="action-button tooltip" data-tooltip="Create a New Directory" onclick="showNewDirectoryPrompt()">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          <span>Create New Directory</span>
+        </button>
+        <button class="action-button tooltip" data-tooltip="Upload a New Media File" id="upload-button" onclick="showFileUploadPrompt()">
+          <i class="fa-solid fa-upload"></i>
+          <span>Click to Chose File to Upload</span>
+        </button>
+        <p class="centered-text">or drag and drop file into file explorer</p>
+      </div>
+    </div>
   </div>
 
   <div class="prompt-overlay hidden" id="prompt-overlay">

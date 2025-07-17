@@ -78,8 +78,8 @@ async function loadDirectory(path = '/usb') {
             item.innerHTML = `
                 <span class="name">${folder}</span>
                 <div class="file-item-actions">
-                    <button class="rename-btn" onclick="showRenamePrompt('${path}', '${folder}', 'folder')">✎</button>
-                    <button class="delete-btn" onclick="showDeletePrompt('${path}', '${folder}', 'folder')">❌</button>
+                    <button class="rename-btn tooltip" data-tooltip="Rename folder" onclick="showRenamePrompt('${path}', '${folder}', 'folder')"><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="delete-btn tooltip" data-tooltip="Delete folder" onclick="showDeletePrompt('${path}', '${folder}', 'folder')"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             `;
             item.querySelector('.name').onclick = () => loadDirectory(`${path}/${folder}`);
@@ -92,9 +92,9 @@ async function loadDirectory(path = '/usb') {
             item.innerHTML = `
                 <span class="name">${file}</span>
                 <div class="file-item-actions">
-                    <button class="download-btn" onclick="downloadFile('${path}', '${file}')">📥</button>
-                    <button class="rename-btn" onclick="showRenamePrompt('${path}', '${file}', 'file')">✎</button>
-                    <button class="delete-btn" onclick="showDeletePrompt('${path}', '${file}', 'file')">❌</button>
+                    <button class="download-btn tooltip" data-tooltip="Download file" onclick="downloadFile('${path}', '${file}')"><i class="fa-regular fa-floppy-disk"></i></button>
+                    <button class="rename-btn tooltip" data-tooltip="Rename file" onclick="showRenamePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="delete-btn tooltip" data-tooltip="Delete file" onclick="showDeletePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             `;
             if (isMedia) {

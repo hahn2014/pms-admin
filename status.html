@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
     <link rel="stylesheet" href="stylesheet/main.css">
     <link rel="stylesheet" href="stylesheet/status.css">
+    <link rel="stylesheet" href="stylesheet/tooltip.css">
     <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
 </head>
 <body>
@@ -27,7 +28,10 @@
             <div class="grid-container">
                 <div class="grid-item">
                     <h3 id="plex-header">Plex Media Server</h3>
-                    <p id="plex-label">no plex media server daemon was found</p>
+                    <div class="troubleshooter-container">
+                        <p id="plex-label">no plex media server daemon was found</p>
+                        <button id="plex-restart" class="fa-solid fa-power-off" onclick="daemonRestart(pms)"> Restart</button>
+                    </div>
                 </div>
                 <div class="grid-item">
                     <h3 id="tautulli-header">Tautulli</h3>
