@@ -222,16 +222,16 @@ The application requires a `.env` file to store sensitive configuration details,
 ```
 pms-admin/
 ├── include/
-├──── fontawesome-free-6.7.2-web/
-├────── all min necessary fontawesome dependencies
+├────── fontawesome-free-6.7.2-web/
+├────────── all min necessary fontawesome dependencies
 ├── node_modules/
-├──── nodeJS modules
+├────── nodeJS modules
 ├── resources/
-├──── all local images
+├────── all local images
 ├── src/
-├──── all complimentary .js files
+├────── all complimentary .js files
 ├── stylesheet/
-├──── all .css files
+├────── all .css files
 ├── .env                    # Environment variables (to be created)
 ├── error.html              # Error Handling page
 ├── file-explorer.html      # File Explorer page
@@ -245,7 +245,7 @@ pms-admin/
 ├── server.js               # main server logic
 ├── stats.html              # NAS Stats page
 ├── status.html             # Server Status page
-├── users.db                # RSA encrypted user/pass database of accessible users for credential verification
+└── users.db                # RSA encrypted user/pass database of accessible users for credential verification
 ```
 
 ## Usage
