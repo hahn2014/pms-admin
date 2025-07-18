@@ -18,48 +18,58 @@ PMS Admin is a web-based application designed to manage and interact with a Netw
 ## Purpose and Use Case
 
 PMS Admin is tailored for users who need a centralized interface to manage their NAS server's media and storage. It serves home media enthusiasts, small businesses, or IT administrators who use a NAS to store movies, TV shows, music, and other files. The application simplifies file management, provides storage analytics, and enhances the media consumption experience by integrating with Plex for movie streaming. Key use cases include:
+- **Server Status**: Critical Plex Media Server infrastructure and processes panel with live status monitoring and daemon/full system restart logic.
 - **File Management**: Browse, upload, rename, download, and delete files and directories on the NAS.
-- **Media Analytics**: Visualize storage usage and media distribution with charts and tables.
-- **Movie Selection**: Get random movie recommendations with metadata for streaming on Plex.
-- **Administrative Control**: Secure login system for authorized access to NAS resources.
+- **Data Analytics**: Visualize storage usage and media distribution with charts and tables.
+- **Media Databasing**: Full NAS media drive crawl for media database population (used across multiple features).
+- **Movie Selection**: Get random movie recommendations with TMDB metadata for streaming on Plex (direct PMS server integration to come).
+- **Administrative Control**: Secure RSA encrypted database login system for authorized access to NAS resources.
 
 ## Features
 
 ### 1. Secure Login System
-- **Username and Password Authentication**: Users log in via a secure form with password visibility toggle.
-- **Responsive Design**: The login page adapts to various screen sizes for accessibility on mobile and desktop devices.
-- **Error Handling**: Displays error messages for invalid credentials.
+- **Username and Password Authentication**: Users log in via a secure form with RSA encryption.
+- **Session Management**: Store user session to maintain login session between pages and tasks.
+- **Responsive Design**: The webapp adapts to various screen sizes for accessibility on mobile and desktop devices.
+- **Error Handling**: Error page handling based on invalid server requests and blacklisted file requests.
 
-### 2. File Explorer
-- **Directory Navigation**: Browse NAS directories with breadcrumb navigation for easy path tracking.
+### 2. Server Processes Monitoring
+- **Live Status**: Live process monitoring for critical Plex Media Server infrastructure (pms, tautulli, overseer, cloudflare)
+- **Hard Drives**: One time request for all NAS Media drive statuses listed with information breakdown
+- **Process Cycling**: Reboot cycle for each unique process to assist admin troubleshooting server side.
+- **System Reboot**: Full NAS server reboot call for fresh launch.
+
+### 3. File Explorer
+- **Directory Navigation**: Browse NAS Media directories with breadcrumb navigation for easy path tracking.
 - **File Operations**: Upload, download, rename, and delete files or directories.
 - **Drag-and-Drop Upload**: Supports drag-and-drop file uploads with a progress bar.
-- **Prompts for Confirmation**: Confirms actions like renaming or deleting to prevent accidental changes.
+- **Prompts for Confirmation**: Confirms actions like renaming or deleting to prevent accidental permanent changes.
 - **File Preview**: Preview media files (images, videos, audio) in a modal overlay.
 
-### 3. Media List
-- **Tabbed Interface**: Displays movies, TV shows, and songs in separate tabs with smooth transitions.
+### 4. Media List
+- **Tabbed Interface**: Displays movies, TV shows, Photos and songs in separate tabs with smooth transitions.
 - **Detailed Tables**: Shows metadata such as title, release year, file path, size, and extension.
 - **Refresh Functionality**: Updates the media list to reflect changes on the NAS.
-- **Responsive Tables**: Scrollable tables optimized for mobile devices.
+- **Searching**: Search functionality to come soon.
 
-### 4. NAS Stats
+### 5. NAS Stats
 - **Analytics Visualization**: Displays storage and media analytics via bar graphs (default) or raw data tables.
 - **Toggle Views**: Switch between graphical and tabular data representations.
 - **Responsive Charts**: Adapts to different screen sizes for optimal viewing.
 
-### 5. Movie Picker
+### 6. Movie Picker
 - **Random Movie Selection**: Recommends a random movie with metadata (title, year, runtime, rating, synopsis) from the NAS.
-- **Plex Integration**: Provides a "Play on Plex" button to stream the selected movie.
+- **Plex Integration**: Provides a "Play on Plex" button to stream the selected movie. Integration with plex media server coming at a later date.
 - **TMDB Metadata**: Fetches movie details and posters from The Movie Database (TMDB).
 - **Responsive Layout**: Adjusts for mobile devices with a stacked layout for movie details.
 
-### 6. Dark Mode
+### 7. Dark Mode
 - **Theme Toggle**: Switch between light and dark modes for user comfort.
 - **Consistent Styling**: Applies theme across all pages, including modals and overlays.
 
-### 7. Navigation and Usability
-- **Unified Header**: Displays a welcome message and navigation menu across all pages.
+### 8. Navigation and Usability
+- **Landing Page**: Display a welcome message in place of nav header and instead list ALL available features on the landing page.
+- **Unified Header**: seamless navigation menu across all pages.
 - **Fixed Footer**: Shows version information and a dark mode toggle.
 - **Return-to-Top Button**: Available on the media list page for easy navigation.
 - **Mobile Optimization**: Responsive design ensures usability on smaller screens.
@@ -72,7 +82,6 @@ Before setting up PMS Admin, ensure you have the following:
 - **TMDB API Key**: Required for fetching movie metadata in the Movie Picker feature.
 - **Node.js** (optional): For local development or testing with a simple server.
 - **Browser**: A modern web browser (Chrome, Firefox, Edge, or Safari) for optimal compatibility.
-- **Internet Access**: For fetching TMDB metadata and external CDN resources (e.g., Chart.js for NAS Stats).
 
 ## Download and Setup
 
@@ -86,16 +95,40 @@ Before setting up PMS Admin, ensure you have the following:
 
 2. **Verify Files**:
    Ensure the following files are present in the project directory:
-   - `index.html` (login page)
-   - `file-explorer.html` (file explorer page)
-   - `media-list.html` (media list page)
-   - `movie-picker.html` (movie picker page)
-   - `stats.html` (NAS stats page)
-   - `main.css` (global styles)
-   - `file-explorer.css` (file explorer styles)
-   - `media-list.css` (media list styles)
-   - `movie-picker.css` (movie picker styles)
-   - `stats.css` (NAS stats styles)
+   - HTML Files
+     - `index.html` (login page and landing page)
+     - `file-explorer.html` (file explorer page)
+     - `media-list.html` (media list page)
+     - `movie-picker.html` (movie picker page)
+     - `stats.html` (NAS stats page)
+     - `status.html` (server status page)
+     - `error.html` (error page)
+   - JS Files
+     - `server.js` (main server logic)
+     - `client.js` (main client logic)
+     - `dark-mode.js` (dark mode toggle button logic)
+     - `file-explorer.js` (file explorer logic)
+     - `media-list.js` (media list logic)
+     - `movie-picker.js` (movie picker logic)
+     - `stats.js` (stats and graphing logic)
+     - `status.js` (server statuses logic)
+     - `tooltip.js` (tooltip helper logic)
+   - CSS Files
+     - `error.css` (error page styles)
+     - `file-explorer.css` (file explorer styles)
+     - `main.css` (global styles)
+     - `media-list.css` (media list styles)
+     - `movie-picker.css` (movie picker styles)
+     - `stats.css` (NAS stats styles)
+     - `status.css` (server status styles)
+     - `tooltip.css` (tooltip helper styles)
+   - Resources
+     - `error-banner.gif` (error page banner image)
+     - `favicon.ico` (tab favicon)
+     - `logo.jpg` (main logo image)
+     - `not-found.jpg` (placeholder image)
+     - `plex.svg` (Plex logo)
+     - `TMDB.svg` (TMDB logo)
 
 ### Step 2: Set Up a Web Server
 1. **Option 1: Local Development Server**:
@@ -104,15 +137,19 @@ Before setting up PMS Admin, ensure you have the following:
      ```bash
      cd pms-admin
      ```
-   - Install a simple HTTP server (e.g., `http-server`):
+   - Install pm2 to manage and run nodeJS servers:
      ```bash
-     npm install -g http-server
+     npm install pm2 -g
      ```
    - Start the server:
      ```bash
-     http-server
+     pm2 start server.js --name pms-admin
      ```
-   - Access the application at `http://localhost:8080`.
+   - Access the application at `http://localhost:3000`.
+   - To make sure the server starts upon reboot:
+     ```bash
+     pm2 save
+     ```
 
 2. **Option 2: Deploy to a Web Server**:
    - Copy the project files to your web server's root directory (e.g., `/var/www/html` for Apache).
@@ -121,39 +158,39 @@ Before setting up PMS Admin, ensure you have the following:
 ### Step 3: Configure NAS Integration
 - Ensure your NAS server is accessible over the network.
 - Configure Plex Media Server on the NAS to allow API access for the "Play on Plex" feature.
-- Update the file paths in the application logic (JavaScript) to point to your NAS storage directories.
 
 ## Configuration
 
 ### Creating and Configuring the .env File
-The application requires a `.env` file to store sensitive configuration details, such as the TMDB API key and NAS server settings.
+The application requires a `.env` file to store sensitive configuration details, such as the TMDB API key, Media root paths and NAS server settings.
 
 1. **Create a `.env` File**:
    - In the project root directory, create a file named `.env`.
    - Example structure:
      ```
-     NODE_ENV=development
+     NODE_ENV=release
      MEDIA_ROOT=/usb/
      TMDB_API_KEY=your_tmdb_api_key_here
+     MONITORED_DRIVES=/dev/sda1,/dev/sdb1,/dev/sdc1
      NAS_SERVER_URL=http://your-nas-server-ip:port
      PLEX_API_URL=http://your-plex-server-ip:32400
      PLEX_API_TOKEN=your_plex_api_token
      ```
 
 2. **Obtain a TMDB API Key**:
-   - Sign up at https://www.themoviedb.org/ and create an API key.
+   - Sign up at [themoviedb.org](https://www.themoviedb.org/) and create an API key.
    - Copy the API key and add it to the `.env` file as `TMDB_API_KEY`.
 
 3. **NAS Server URL**:
-   - Set `NAS_SERVER_URL` to the IP address and port of your NAS server (e.g., `http://192.168.1.100:8080`).
+   - Set `NAS_SERVER_URL` to the IP address and port of your NAS server (e.g., `http://192.168.1.1:8080`).
    - Ensure the NAS server has an API or file system access enabled.
 
 4. **Plex API Configuration**:
-   - Obtain a Plex API token from your Plex Media Server (see Plex documentation for details).
+   - Obtain a Plex API token from your Plex Media Server ([see Plex documentation for details](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/)).
    - Set `PLEX_API_URL` to your Plex server's address and `PLEX_API_TOKEN` to the token.
 
 5. **Secure the .env File**:
-   - Ensure the `.env` file is not publicly accessible by configuring your web server to deny access (e.g., add to `.htaccess` for Apache):
+   - Ensure the `.env` file is not publicly accessible by either having it hosted in the parent directory or configuring your web server to deny access (e.g., add to `.htaccess` for Apache):
      ```
      <Files .env>
          Order allow,deny
@@ -170,47 +207,62 @@ The application requires a `.env` file to store sensitive configuration details,
 
 ### Additional Configuration
 - **Authentication**: Implement a backend service to handle username/password authentication. The current login form requires integration with an authentication API.
-- **File System Access**: Configure the backend to interact with the NAS file system for file operations (upload, download, etc.).
-- **Chart.js Integration**: Ensure the `stats.html` page loads Chart.js from a CDN for rendering analytics graphs.
+- **File System Access**: Configure the backend to interact with the NAS file system for file operations (upload, download, etc.). There are existing limits and restrictions for my own personal use that some may want removed or loosened. See `file-explorer.js` for localized restrictions. 
+- **Chart.js Integration**: Ensure the `stats.js` page loads nas data to your liking. this is built off my file structure and pre-existing python scripts (included) and explained.
 - **Responsive Design**: Test the application on various devices to ensure the responsive design works as expected.
+- **User Registration**: As I personally plan to have minimal user activity, registration is an unnecessary risk for me, though is a necessary feature to inject into the users.db credentials database. Registration logic can be found within `server.js` from the `/api/register` call.
 
 ## Directory Structure
 
 ```
 pms-admin/
-├── index.html              # Login page
-├── file-explorer.html      # File explorer page
-├── media-list.html         # Media list page
-├── movie-picker.html       # Movie picker page
-├── stats.html              # NAS stats page
-├── main.css                # Global styles
-├── file-explorer.css       # File explorer styles
-├── media-list.css          # Media list styles
-├── movie-picker.css        # Movie picker styles
-├── stats.css               # NAS stats styles
+├── include/
+├──── fontawesome-free-6.7.2-web/
+├────── all min necessary fontawesome dependencies
+├── node_modules/
+├──── nodeJS modules
+├── resources/
+├──── all local images
+├── src/
+├──── all complimentary .js files
+├── stylesheet/
+├──── all .css files
 ├── .env                    # Environment variables (to be created)
-└── README.md               # This documentation
+├── error.html              # Error Handling page
+├── file-explorer.html      # File Explorer page
+├── index.html              # Login Handling and Landing page
+├── media.db                # sql database of all NAS media files and minimal metadata
+├── media-list.html         # Media List page
+├── movie-picker.html       # Movie Picker page
+├── nas-stats.json          # python script generated JSON file with basic disk information stats and file stats
+├── package.json            # nodeJS server package
+├── package-lock.json       # nodeJS module package
+├── server.js               # main server logic
+├── stats.html              # NAS Stats page
+├── status.html             # Server Status page
+├── users.db                # RSA encrypted user/pass database of accessible users for credential verification
 ```
 
 ## Usage
 
 1. **Access the Application**:
-   - Open your browser and navigate to the server URL (e.g., `http://localhost:8080` or your deployed server address).
+   - Open your browser and navigate to the server URL (e.g., `http://localhost:3000` or your deployed server address).
    - Log in using your credentials.
 
 2. **Navigate the Interface**:
-   - Use the navigation menu to access File Explorer, Media List, NAS Stats, Movie Picker, or Help.
+   - Use the landing page to access Server Status, File Explorer, NAS Stats, Movie Picker, Media List, or Help.
    - Toggle between light and dark modes using the footer button.
+   - Return to landing page by clicking logo in top left corner.
 
 3. **File Explorer**:
- - Browse directories using breadcrumbs.
+   - Browse by clicking through folders or returning to parent directories using the breadcrumb links.
    - Upload files via drag-and-drop or the upload button.
    - Rename, download, or delete files using the action buttons.
-   - Preview media files in a modal overlay.
+   - Stream media files in a modal overlay. (not recommended for video files, Plex handles streaming significantly better)
 
 4. **Media List**:
-   - Switch between Movies, TV Shows, and Songs tabs.
-   - Refresh the list to update media metadata.
+   - Switch between Movies, TV Shows, Songs and Photos tabs.
+   - Refresh the list to update media metadata (used in movie picker).
    - Scroll through tables to view detailed file information.
 
 5. **NAS Stats**:
@@ -218,7 +270,7 @@ pms-admin/
    - Toggle between views using the "Switch to Raw Data" button.
 
 6. **Movie Picker**:
-   - Click "Pick a Different Movie" to get a random movie recommendation.
+   - Click "Something Else" to get a random movie recommendation.
    - View movie details and click "Play on Plex" to stream.
 
 7. **Logout**:
@@ -228,15 +280,18 @@ pms-admin/
 
 - **Login Issues**:
   - Verify that the authentication backend is running and configured correctly.
-  - Check browser console for error messages related to authentication.
+  - Ensure user credentials have been injected into the `users.db` file through registration api call.
+  - Check browser console for error messages related to authentication if .env variable set to development
 
 - **File Explorer Errors**:
   - Ensure the NAS server is accessible and the file system API is correctly configured.
+  - Validate .env is set up and `MEDIA_ROOT` is the path to the mounting points for your NAS drives.
   - Check file permissions on the NAS for read/write access.
 
 - **Movie Picker Not Loading Metadata**:
   - Verify the TMDB API key in the `.env` file.
   - Check network connectivity and TMDB API status.
+  - Check console output for errors regarding to TMDB if running as development environment.
 
 - **Charts Not Rendering**:
   - Ensure the Chart.js CDN is accessible.
@@ -267,7 +322,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - **The Movie Database (TMDB)**: For providing movie metadata and images.
 - **Chart.js**: For rendering analytics charts in the NAS Stats feature.
 - **Plex**: For media streaming integration.
-
+- **FontAwesome**: Great free use icons and button art.
 ---
 
 *Developed by HahnSolo. 1.0 update July 2025*
