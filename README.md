@@ -6,11 +6,13 @@ PMS Admin is a web-based application designed to manage and interact with a Netw
 - [Purpose and Use Case](#purpose-and-use-case)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-- [Download and Setup](#download-and-setup)
+- [Download Files](#download-files)
 - [Configuration](#configuration)
 - [Directory Structure](#directory-structure)
+- [Running Server](#Running-Server)
 - [Usage](#usage)
 - [Troubleshooting](#troubleshooting)
+- [Upcoming Features](#upcoming-features)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -76,16 +78,16 @@ PMS Admin is tailored for users who need a centralized interface to manage their
 
 ## Prerequisites
 
-Before setting up PMS Admin, ensure you have the following:
+> [!IMPORTANT]
+> Before setting up PMS Admin, ensure you have the following
 - **Web Server**: A server capable of serving static HTML, CSS, and JavaScript files (e.g., Apache, Nginx, or a simple Node.js server).
 - **NAS Server**: A NAS device with accessible file storage and Plex Media Server installed.
 - **TMDB API Key**: Required for fetching movie metadata in the Movie Picker feature.
 - **Node.js** (optional): For local development or testing with a simple server.
 - **Browser**: A modern web browser (Chrome, Firefox, Edge, or Safari) for optimal compatibility.
 
-## Download and Setup
+## Download Files
 
-### Step 1: Download the Project
 1. **Clone or Download the Repository**:
    - If using Git, clone the repository:
      ```bash
@@ -130,44 +132,11 @@ Before setting up PMS Admin, ensure you have the following:
      - `plex.svg` (Plex logo)
      - `TMDB.svg` (TMDB logo)
 
-### Step 2: Set Up a Web Server
-1. **Option 1: Local Development Server**:
-   - Install Node.js if not already installed (https://nodejs.org/).
-   - Navigate to the project directory:
-     ```bash
-     cd pms-admin
-     ```
-   - Install pm2 to manage and run nodeJS servers:
-     ```bash
-     npm install pm2 -g
-     ```
-   - Start the server:
-     ```bash
-     pm2 start server.js --name pms-admin
-     ```
-   - Access the application at `http://localhost:3000` or `http://nas.ip.address:3000`.
-   - To make sure the server starts upon reboot:
-     ```bash
-     pm2 save
-     ```
-       - To stop and remove server:
-     ```bash
-     pm2 stop pms-admin
-     pm2 delete pms-admin
-     ```
-
-2. **Option 2: Deploy to a Web Server**:
-   - Copy the project files to your web server's root directory (e.g., `/var/www/html` for Apache).
-   - Configure the server to serve static files and ensure proper MIME types for HTML, CSS, and JavaScript.
-
-### Step 3: Configure NAS Integration
-- Ensure your NAS server is accessible over the network.
-- Configure Plex Media Server on the NAS to allow API access for the "Play on Plex" feature.
-
 ## Configuration
 
 ### Creating and Configuring the .env File
-The application requires a `.env` file to store sensitive configuration details, such as the TMDB API key, Media root paths and NAS server settings.
+> [!WARNING]
+> The application requires a `.env` file to store sensitive configuration details, such as the TMDB API key, Media root paths and NAS server settings.
 
 1. **Create a `.env` File**:
    - In the project root directory, create a file named `.env`.
@@ -195,18 +164,12 @@ The application requires a `.env` file to store sensitive configuration details,
    - Set `PLEX_API_URL` to your Plex server's address and `PLEX_API_TOKEN` to the token.
 
 5. **Secure the .env File**:
-   - Ensure the `.env` file is not publicly accessible by either having it hosted in the parent directory or configuring your web server to deny access (e.g., add to `.htaccess` for Apache):
-     ```
-     <Files .env>
-         Order allow,deny
-         Deny from all
-     </Files>
-     ```
+   - Ensure the `.env` file is not publicly accessible by either having it hosted in the parent directory or configuring your web server to deny access (done by default in `server.js`)
 
 6. **Load Environment Variables**:
-   - If using a Node.js backend, use a library like `dotenv` to load the `.env` file:
+   - Since using a Node.js backend, we need to use a library like `dotenv` to load the `.env` file:
      ```javascript
-     require('dotenv').config();
+     require('dotenv').config();  //this is enabled by default
      ```
    - For client-side JavaScript, ensure the environment variables are injected securely (e.g., via a server-side script or build process).
 
@@ -215,10 +178,11 @@ The application requires a `.env` file to store sensitive configuration details,
 - **File System Access**: Configure the backend to interact with the NAS file system for file operations (upload, download, etc.). There are existing limits and restrictions for my own personal use that some may want removed or loosened. See `file-explorer.js` for localized restrictions. 
 - **Chart.js Integration**: Ensure the `stats.js` page loads nas data to your liking. this is built off my file structure and pre-existing python scripts (included) and explained.
 - **Responsive Design**: Test the application on various devices to ensure the responsive design works as expected.
-- **User Registration**: As I personally plan to have minimal user activity, registration is an unnecessary risk for me, though is a necessary feature to inject into the users.db credentials database. Registration logic can be found within `server.js` from the `/api/register` call.
+- **User Registration**: As I personally plan to have minimal user activity, registration is an unnecessary risk for me. Although it is a necessary feature to inject into the users.db credentials database, so registration logic can be found within `server.js` from the `/api/register` call.
 
 ## Directory Structure
-
+> [!CAUTION]
+> Ensure your file structure for the server is set up like the following or be sure to modify HTML files with the refactored file structure.
 ```
 pms-admin/
 ├── include/
@@ -247,6 +211,31 @@ pms-admin/
 ├── status.html             # Server Status page
 └── users.db                # RSA encrypted user/pass database of accessible users for credential verification
 ```
+
+## Running Server
+- Install Node.js if not already installed (https://nodejs.org/).
+- Navigate to the project directory:
+  ```bash
+  cd pms-admin
+  ```
+- Install pm2 to manage and run nodeJS servers:
+  ```bash
+  npm install pm2 -g
+  ```
+- Start the server:
+  ```bash
+  pm2 start server.js --name pms-admin
+  ```
+- Access the application at `http://localhost:3000` or `http://nas.ip.address:3000`.
+- To make sure the server starts upon reboot:
+  ```bash
+  pm2 save
+  ```
+    - To stop and remove server:
+  ```bash
+  pm2 stop pms-admin
+  pm2 delete pms-admin
+  ```
 
 ## Usage
 
@@ -305,6 +294,14 @@ pms-admin/
 - **Responsive Design Issues**:
   - Test on multiple devices and browsers to identify layout issues.
   - Adjust CSS media queries in `main.css`, `file-explorer.css`, etc., if needed.
+- **Bug Reporting**
+  - You can submit [a new issue request](https://github.com/hahn2014/pms-admin/issues/new) for any bugs or app breaking crashes found, or alternatively, [fork the repository](#Contributing) and submit your own fix!
+
+## Upcoming Features
+- [ ] Plex Media Server integration with movie picker and media library population.
+- [ ] Tautulli stats integration
+- [ ] Overseer requests integration
+- [ ] More to come!
 
 ## Contributing
 
@@ -319,11 +316,11 @@ Please ensure your code follows the existing style and includes appropriate test
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
-- **HahnSolo**: Developer of PMS Admin, version 1.0, updated July 2025.
+- **@Hahn2014**: Developer of PMS Admin, version 1.0, updated July 2025.
 - **The Movie Database (TMDB)**: For providing movie metadata and images.
 - **Chart.js**: For rendering analytics charts in the NAS Stats feature.
 - **Plex**: For media streaming integration.
@@ -331,3 +328,5 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ---
 
 *Developed by HahnSolo. 1.0 update July 2025*
+
+[Back to Top](#PMS-Admin-Web-Application)
