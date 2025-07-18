@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const fileUpload = require('express-fileupload');
+const { exec } = require('child_process');
+const util = require('util');
+const execPromise = util.promisify(exec);
 const app = express();
 const port = 3000;
 const sqlite3 = require('sqlite3').verbose();
@@ -14,6 +17,7 @@ const mediaRoot = process.env.MEDIA_ROOT || '/usb';
 const sessions = new Set(); // Store active session tokens
 const nasStatsPath = path.join(__dirname, 'nas-stats.json');
 const mockNasPath = path.join(__dirname, 'mock_usb');
+const monitoredDrives = process.env.MONITORED_DRIVES ? process.env.MONITORED_DRIVES.split(',').map(drive => drive.trim()) : [];
 
 // Middleware to block access to sensitive files
 app.use((req, res, next) => {
@@ -772,6 +776,119 @@ app.post('/api/login', async (req, res) => {
     } catch (error) {
         sendError(res, 500, 'Internal server error');
     }
+});
+
+/**
+ * Restarts a specified service.
+ * @param {string} service - Body parameter for the service name.
+ */
+app.post('/api/restart-service', async (req, res) => {
+    const sessionToken = req.headers['x-session-token'];
+    if (!sessionToken || !sessions.has(sessionToken)) {
+        return sendError(res, 401, 'Unauthorized');
+    }
+
+    const { service } = req.body;
+    const allowedServices = ['plexmediaserver', 'tautulli', 'overseer', 'cloudflared'];
+    if (!service || !allowedServices.includes(service)) {
+        return sendError(res, 400, 'Invalid or missing service name');
+    }
+
+    try {
+        await execPromise(`sudo systemctl restart ${service}`);
+        if (isDev) console.log(`[DEBUG] Restarted service: ${service}`);
+        res.json({ message: `Service ${service} restarted successfully` });
+    } catch (error) {
+        if (isDev) console.error(`[DEBUG] Error restarting service ${service}:`, error.message);
+        sendError(res, 500, `Failed to restart service ${service}: ${error.message}`);
+    }
+});
+
+/**
+ * Reboots the NAS server.
+ */
+app.post('/api/reboot', async (req, res) => {
+    const sessionToken = req.headers['x-session-token'];
+    if (!sessionToken || !sessions.has(sessionToken)) {
+        return sendError(res, 401, 'Unauthorized');
+    }
+
+    try {
+        if (isDev) {
+            console.log('[DEBUG] Simulating NAS server reboot in development mode');
+            sendError(res, 503, 'Server offline');
+        } else {
+            await execPromise('sudo reboot');
+            sendError(res, 503, 'Server offline');
+        }
+    } catch (error) {
+        if (isDev) console.error('[DEBUG] Error initiating reboot:', error.message);
+        sendError(res, 500, `Failed to reboot server: ${error.message}`);
+    }
+});
+
+/**
+ * Checks the status of NAS services and drives with timeout handling.
+ * @returns {Object} JSON object with service and drive statuses.
+ */
+app.get('/api/service-status', async (req, res) => {
+    const sessionToken = req.headers['x-session-token'];
+    if (!sessionToken || !sessions.has(sessionToken)) {
+        return sendError(res, 401, 'Unauthorized');
+    }
+
+    const services = ['plexmediaserver', 'tautulli', 'overseer', 'cloudflared'];
+    const statuses = { services: {}, drives: {}, noDrivesFound: false };
+
+    // Check services
+    for (const service of services) {
+        try {
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Command timed out')), 5000);
+            });
+            const { stdout } = await Promise.race([
+                execPromise(`systemctl is-active ${service}`),
+                timeoutPromise
+            ]);
+            const status = stdout.trim();
+            statuses.services[service] = status === 'active' ? 'active' : status === 'inactive' ? 'inactive' : 'failed';
+        } catch (error) {
+            if (isDev) console.error(`[DEBUG] Error checking status for ${service}:`, error.message);
+            if (error.message.includes('Unit') && error.message.includes('not found')) {
+                statuses.services[service] = 'not-installed';
+            } else {
+                statuses.services[service] = error.message === 'Command timed out' ? 'timeout' : 'failed';
+            }
+        }
+    }
+
+    // Check drives
+    if (monitoredDrives.length === 0) {
+        statuses.noDrivesFound = true;
+    } else {
+        for (const drive of monitoredDrives) {
+            try {
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Command timed out')), 5000);
+                });
+                const { stdout } = await Promise.race([
+                    execPromise(`findmnt ${drive}`),
+                    timeoutPromise
+                ]);
+                statuses.drives[drive] = stdout ? 'mounted' : 'unmounted';
+            } catch (error) {
+                if (isDev) console.error(`[DEBUG] Error checking drive ${drive}:`, error.message);
+                statuses.drives[drive] = error.message === 'Command timed out' ? 'timeout' : 'not-found';
+            }
+        }
+        // Check if all drives failed
+        const allDrivesFailed = Object.values(statuses.drives).every(status => status === 'not-found' || status === 'timeout');
+        if (allDrivesFailed) {
+            statuses.noDrivesFound = true;
+        }
+    }
+
+    res.json(statuses);
 });
 
 // Helper function to construct full file paths

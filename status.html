@@ -27,9 +27,10 @@
             <h1 class="centered-header">Server Daemon Status</h1>
             <div class="grid-container">
                 <div class="grid-item">
-                    <h3 id="plex-header">Plex Media Server</h3>
+                    <h2>Plex Media Server</h2>
                     <div class="troubleshooter-container">
-                        <p id="plex-label">no plex media server daemon was found</p>
+                        <span id="plex-status" class="status-text">Status: unknown</span>
+                        <p id="plex-error" class="error-message hidden"></p>
                         <button class="daemon-button" id="plex-restart" onclick="daemonRestart(pms)">
                             <i class="fa-solid fa-power-off"></i>
                             <span>Restart</span>
@@ -37,9 +38,10 @@
                     </div>
                 </div>
                 <div class="grid-item">
-                    <h3 id="tautulli-header">Tautulli</h3>
+                    <h2>Tautulli</h2>
                     <div class="troubleshooter-container">
-                        <p id="tautulli-label">no tautulli daemon was found</p>
+                        <span id="tautulli-status" class="status-text">Status: unknown</span>
+                        <p id="tautulli-error" class="error-message hidden"></p>
                         <button class="daemon-button" id="tautulli-restart" onclick="daemonRestart(tau)">
                             <i class="fa-solid fa-power-off"></i>
                             <span>Restart</span>
@@ -47,9 +49,10 @@
                     </div>
                 </div>
                 <div class="grid-item">
-                    <h3 id="overseer-header">Overseer</h3>
+                    <h2>Overseer</h2>
                     <div class="troubleshooter-container">
-                        <p id="overseer-label">no overseer daemon was found</p>
+                        <span id="overseer-status" class="status-text">Status: unknown</span>
+                        <p id="overseer-error" class="error-message hidden"></p>
                         <button class="daemon-button" id="overseer-restart" onclick="daemonRestart(ove)">
                             <i class="fa-solid fa-power-off"></i>
                             <span>Restart</span>
@@ -57,25 +60,35 @@
                     </div>
                 </div>
                 <div class="grid-item">
-                    <h3 id="cloudflared-header">Cloudflared</h3>
+                    <h2>Cloudflared</h2>
                     <div class="troubleshooter-container">
-                        <p id="cloudflared-label">no cloudflared daemon was found</p>
+                        <span id="cloudflared-status" class="status-text">Status: unknown</span>
+                        <p id="cloudflared-error" class="error-message hidden"></p>
                         <button class="daemon-button" id="cloudflared-restart" onclick="daemonRestart(clo)">
                             <i class="fa-solid fa-power-off"></i>
                             <span>Restart</span>
                         </button>
                     </div>
                 </div>
-                <div class="grid-item">
-                    <h3 id="usb-header">Hard Drive Status</h3>
-                    <div class="troubleshooter-container">
-                        <p id="usb-label">no hard drives found</p>
-                        <button class="daemon-button" id="drives-restart" onclick="daemonRestart(drives)">
-                            <i class="fa-solid fa-power-off"></i>
-                            <span>Restart</span>
-                        </button>
-                    </div>
-                </div>
+            </div>
+            <h1 class="centered-header">Drive Status</h1>
+            <div class="grid-container" id="drive-status-container">
+                <!-- Drive status elements will be dynamically added if needed -->
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="reboot-server">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Reboot NAS Server</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <p id="confirm-message"></p>
+            <div class="modal-buttons">
+                <button id="confirm-yes" class="modal-button confirm">Yes</button>
+                <button id="confirm-no" class="modal-button cancel">No</button>
             </div>
         </div>
     </div>

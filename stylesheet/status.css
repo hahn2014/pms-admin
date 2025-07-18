@@ -1,21 +1,152 @@
 .centered-header {
     text-align: center;
     font-size: 1.8rem;
+    margin-top: 2rem;
 }
 
-.grid-container h3 {
-    text-align: left;
-    padding-bottom: 15px;
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .grid-item {
-    height: 150px;
+    height: 180px;
     position: relative;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.grid-container .error-message {
+    text-align: center;
+    color: red;
+    font-size: 1rem;
+    margin: 1rem 0;
 }
 
 .daemon-button {
     position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    background-color: rgba(168, 0, 0, 0.8);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.daemon-button:hover {
+    background-color: rgba(202, 2, 2, 0.8);
+}
+
+.daemon-button:disabled {
+    background-color: rgba(100, 100, 100, 0.5);
+    cursor: not-allowed;
+}
+
+.status-text::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-active::before {
+    background-color: green;
+}
+
+.status-inactive::before {
+    background-color: yellow;
+}
+
+.status-failed::before {
+    background-color: red;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    text-align: left;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--item-background);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
+}
+
+.modal-content p {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.modal-button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.modal-button.confirm {
+    background-color: rgba(168, 0, 0, 0.8);
+    color: white;
+}
+
+.modal-button.confirm:hover {
+    background-color: rgba(202, 2, 2, 0.8);
+}
+
+.modal-button.cancel {
+    background-color: #a1a1a1;
+}
+
+.modal-button.cancel:hover {
+    background-color: #6e6d6d;
+}
+
+.hidden {
+    display: none;
+}
+
+#reboot-server {
+    background-color: #b30202;
+    border-radius: 15px;
+    height: 80px;
+}
+
+#reboot-server:hover {
+    background-color: #8b0000;
+    transform: scale(1.05);
 }
