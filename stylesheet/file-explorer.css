@@ -100,6 +100,14 @@
     justify-content: space-between;
 }
 
+.file-item.duplicate {
+    background-color: rgba(255, 99, 71, 0.33); /* Light red background for duplicates */
+}
+
+.file-item.duplicate:hover {
+    background-color: rgba(243, 87, 61, 0.45);
+}
+
 .file-item:hover {
     background-color: var(--secondary-background-color);
 }
@@ -116,6 +124,18 @@
 
 .file-item .name {
     flex: 1;
+}
+
+.file-item .duplicate-warning {
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+    padding-right: 10px;
+}
+
+.file-item .duplicate-warning:hover {
+    text-decoration: underline;
 }
 
 .file-item-actions {

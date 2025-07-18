@@ -1,3 +1,7 @@
+/**
+ * Loads the directory contents and highlights duplicate files based on nas-stats.json.
+ * @param {string} path - The directory path to load (defaults to '/usb').
+ */
 async function loadDirectory(path = '/usb') {
     console.log(`[DEBUG] loadDirectory called with path: ${path}`);
     if (sessionStorage.getItem('isLoggedIn') !== 'true' || !sessionStorage.getItem('sessionToken')) {
@@ -45,6 +49,22 @@ async function loadDirectory(path = '/usb') {
     document.getElementById('file-explorer').dataset.path = path;
 
     try {
+        // Fetch nas-stats.json to check for duplicates
+        console.log('[DEBUG] Fetching nas-stats.json');
+        const statsResponse = await fetch('/api/nas-stats', {
+            headers: {
+                'X-Session-Token': sessionStorage.getItem('sessionToken') || ''
+            }
+        });
+        if (!statsResponse.ok) {
+            console.error('[DEBUG] Failed to fetch nas-stats:', statsResponse.status);
+            throw new Error('Failed to fetch nas-stats');
+        }
+        const statsData = await statsResponse.json();
+        const duplicates = statsData.duplicates || [];
+
+        console.log(`[DEBUG] Duplicates array:`, JSON.stringify(duplicates));
+
         console.log(`[DEBUG] Fetching files for path: ${path}`);
         const response = await fetch(`/api/files?path=${encodeURIComponent(path)}`, {
             headers: {
@@ -89,14 +109,55 @@ async function loadDirectory(path = '/usb') {
             const item = document.createElement('div');
             item.className = 'file-item file';
             const isMedia = /\.(mp4|mkv|avi|mov|mp3|flac|aac|wav|jpg|jpeg|png|gif)$/i.test(file);
-            item.innerHTML = `
-                <span class="name">${file}</span>
-                <div class="file-item-actions">
-                    <button class="download-btn tooltip" data-tooltip="Download file" onclick="downloadFile('${path}', '${file}')"><i class="fa-regular fa-floppy-disk"></i></button>
-                    <button class="rename-btn tooltip" data-tooltip="Rename file" onclick="showRenamePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-pen-to-square"></i></button>
-                    <button class="delete-btn tooltip" data-tooltip="Delete file" onclick="showDeletePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-trash-can"></i></button>
-                </div>
-            `;
+            const filePath = `${path}/${file}`;
+            // Check for duplicates by filename
+            let duplicateGroup = null;
+            let isDuplicate = false;
+            if (Array.isArray(duplicates)) {
+                // Handle array of objects with 'name' and 'locations'
+                duplicateGroup = duplicates.find(dup =>
+                    dup && typeof dup === 'object' && Array.isArray(dup.locations) &&
+                    dup.locations.some(dupPath => {
+                        // Normalize path to match client-side /usb/ prefix
+                        const normalizedPath = dupPath.replace(/^.*mock_usb\//, '/usb/');
+                        return normalizedPath.split('/').pop() === file;
+                    })
+                );
+                isDuplicate = !!duplicateGroup;
+            }
+
+            console.log(`[DEBUG] Checking file: ${filePath}, isDuplicate: ${isDuplicate}`);
+
+            if (isDuplicate) {
+                item.classList.add('duplicate');
+                // Normalize paths for display in modal
+                const pathsToShow = duplicateGroup.locations.map(path => path.replace(/^.*mock_usb\//, '/usb/'));
+                // Use data attributes to store filePath and pathsToShow
+                item.innerHTML = `
+                    <span class="name">${file}</span>
+                    <span class="duplicate-warning" data-filepath="${encodeURIComponent(filePath)}" data-locations="${encodeURIComponent(JSON.stringify(pathsToShow))}">Duplicate file detected</span>
+                    <div class="file-item-actions">
+                        <button class="download-btn tooltip" data-tooltip="Download file" onclick="downloadFile('${path}', '${file}')"><i class="fa-regular fa-floppy-disk"></i></button>
+                        <button class="rename-btn tooltip" data-tooltip="Rename file" onclick="showRenamePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="delete-btn tooltip" data-tooltip="Delete file" onclick="showDeletePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                `;
+                // Attach event listener for duplicate warning
+                const warningSpan = item.querySelector('.duplicate-warning');
+                warningSpan.addEventListener('click', () => {
+                    console.log(`[DEBUG] Clicked duplicate warning for: ${filePath}`);
+                    showDuplicateModal(decodeURIComponent(warningSpan.dataset.filepath), decodeURIComponent(warningSpan.dataset.locations));
+                });
+            } else {
+                item.innerHTML = `
+                    <span class="name">${file}</span>
+                    <div class="file-item-actions">
+                        <button class="download-btn tooltip" data-tooltip="Download file" onclick="downloadFile('${path}', '${file}')"><i class="fa-regular fa-floppy-disk"></i></button>
+                        <button class="rename-btn tooltip" data-tooltip="Rename file" onclick="showRenamePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="delete-btn tooltip" data-tooltip="Delete file" onclick="showDeletePrompt('${path}', '${file}', 'file')"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                `;
+            }
             if (isMedia) {
                 item.querySelector('.name').onclick = () => showPreview(`${path}/${file}`, file);
             }
@@ -108,6 +169,89 @@ async function loadDirectory(path = '/usb') {
     }
 }
 
+/**
+ * Shows a modal listing duplicate file locations with options to delete or cancel.
+ * @param {string} filePath - The path of the duplicate file.
+ * @param {string} locations - JSON string of duplicate file locations.
+ */
+async function showDuplicateModal(filePath, locations) {
+    console.log(`[DEBUG] showDuplicateModal called for: ${filePath}, locations: ${locations}`);
+    try {
+        const locationsArray = JSON.parse(locations);
+        if (!Array.isArray(locationsArray)) {
+            throw new Error('Invalid locations format: expected an array');
+        }
+        const message = `
+            <strong>Duplicate File Detected</strong><br>
+            The file is found in the following locations:<br>
+            <ul>
+                ${locationsArray.map(loc => `<li>${loc}</li>`).join('')}
+            </ul>
+            Would you like to delete this file: <strong>${filePath}</strong>?
+        `;
+        showPrompt(
+            'Duplicate File',
+            message,
+            '',
+            async () => {
+                console.log('[DEBUG] Deleting duplicate:', filePath);
+                const currentPath = document.getElementById('file-explorer').dataset.path;
+                const fileName = filePath.split('/').pop();
+                const requestBody = { path: currentPath, name: fileName };
+                const response = await fetch('/api/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Token': sessionStorage.getItem('sessionToken') || ''
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('[DEBUG] Delete failed:', errorData);
+                    throw new Error(errorData.error || 'Failed to delete duplicate');
+                }
+                console.log('[DEBUG] Delete successful');
+                const notification = document.getElementById('notification');
+                notification.textContent = `Duplicate file ${fileName} deleted successfully`;
+                notification.classList.remove('error');
+                notification.classList.add('success');
+                notification.classList.remove('hidden');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 3000);
+
+                // Update nas-stats.json by removing the duplicate entry
+                await fetch('/api/update-nas-stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Token': sessionStorage.getItem('sessionToken') || ''
+                    },
+                    body: JSON.stringify({ deletedFile: filePath })
+                });
+                loadDirectory(currentPath);
+            },
+            false
+        );
+    } catch (error) {
+        console.error('[DEBUG] Error in showDuplicateModal:', error);
+        const notification = document.getElementById('notification');
+        notification.textContent = `Error displaying duplicate modal: ${error.message}`;
+        notification.classList.remove('success');
+        notification.classList.add('error');
+        notification.classList.remove('hidden');
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 3000);
+    }
+}
+
+/**
+ * Shows a preview for media files (video, audio, image).
+ * @param {string} filePath - The path to the media file.
+ * @param {string} fileName - The name of the media file.
+ */
 async function showPreview(filePath, fileName) {
     console.log(`[DEBUG] showPreview called for: ${filePath}`);
     const previewOverlay = document.getElementById('preview-overlay');
@@ -154,6 +298,9 @@ async function showPreview(filePath, fileName) {
     console.log('[DEBUG] Preview overlay shown');
 }
 
+/**
+ * Hides the preview overlay.
+ */
 function hidePreview() {
     const previewOverlay = document.getElementById('preview-overlay');
     const previewContent = document.getElementById('preview-content');
@@ -167,6 +314,11 @@ function hidePreview() {
     }
 }
 
+/**
+ * Downloads a file from the server.
+ * @param {string} path - The directory path.
+ * @param {string} file - The file name.
+ */
 async function downloadFile(path, file) {
     console.log(`[DEBUG] Downloading file: ${path}/${file}`);
     const notification = document.getElementById('notification');
@@ -212,6 +364,14 @@ async function downloadFile(path, file) {
     }
 }
 
+/**
+ * Displays a prompt modal for user input or confirmation.
+ * @param {string} title - The prompt title.
+ * @param {string} message - The prompt message.
+ * @param {string} inputPlaceholder - Placeholder for the input field.
+ * @param {Function} confirmCallback - Callback function for confirm action.
+ * @param {boolean} showInput - Whether to show the input field.
+ */
 function showPrompt(title, message, inputPlaceholder, confirmCallback, showInput = false) {
     console.log(`[DEBUG] showPrompt called with title: ${title}, showInput: ${showInput}`);
     const promptOverlay = document.getElementById('prompt-overlay');
@@ -281,6 +441,9 @@ function showPrompt(title, message, inputPlaceholder, confirmCallback, showInput
     }
 }
 
+/**
+ * Hides the prompt overlay.
+ */
 function hidePrompt() {
     const promptOverlay = document.getElementById('prompt-overlay');
     if (promptOverlay) {
@@ -296,6 +459,9 @@ function hidePrompt() {
     }
 }
 
+/**
+ * Shows a prompt to create a new directory.
+ */
 function showNewDirectoryPrompt() {
     const currentPath = document.getElementById('file-explorer').dataset.path || '/usb';
     showPrompt(
@@ -328,10 +494,13 @@ function showNewDirectoryPrompt() {
     );
 }
 
+/**
+ * Shows a prompt to upload a file.
+ */
 function showFileUploadPrompt() {
     console.log('[DEBUG] showFileUploadPrompt called');
     const currentPath = document.getElementById('file-explorer').dataset.path || '/usb';
-    if (currentPath === '/usb') { //verify outside of root for file upload
+    if (currentPath === '/usb') {
         showPrompt(
             'Upload Error',
             'File uploads are not allowed in the root directory. Please navigate to a /Media directory.',
@@ -362,6 +531,11 @@ function showFileUploadPrompt() {
     );
 }
 
+/**
+ * Uploads a file to the server with progress tracking.
+ * @param {File} file - The file to upload.
+ * @param {string} currentPath - The directory path to upload to.
+ */
 async function uploadFile(file, currentPath) {
     console.log(`[DEBUG] Uploading file: ${file.name} to ${currentPath}`);
     const notification = document.getElementById('notification');
@@ -457,6 +631,10 @@ async function uploadFile(file, currentPath) {
     }
 }
 
+/**
+ * Handles drag-over events for file uploads.
+ * @param {Event} event - The drag-over event.
+ */
 function handleDragOver(event) {
     event.preventDefault();
     const fileExplorer = document.getElementById('file-explorer');
@@ -466,6 +644,10 @@ function handleDragOver(event) {
     }
 }
 
+/**
+ * Handles drop events for file uploads.
+ * @param {Event} event - The drop event.
+ */
 function handleDrop(event) {
     event.preventDefault();
     const fileExplorer = document.getElementById('file-explorer');
@@ -488,6 +670,12 @@ function handleDrop(event) {
     }
 }
 
+/**
+ * Shows a prompt to rename a file or folder.
+ * @param {string} currentPath - The directory path.
+ * @param {string} name - The current name of the file or folder.
+ * @param {string} type - The type ('file' or 'folder').
+ */
 function showRenamePrompt(currentPath, name, type) {
     console.log(`[DEBUG] showRenamePrompt called for ${type}: ${name}`);
     const extension = type === 'file' ? name.slice(name.lastIndexOf('.')) : '';
@@ -528,6 +716,12 @@ function showRenamePrompt(currentPath, name, type) {
     );
 }
 
+/**
+ * Shows a prompt to confirm deletion of a file or folder.
+ * @param {string} currentPath - The directory path.
+ * @param {string} name - The name of the file or folder.
+ * @param {string} type - The type ('file' or 'folder').
+ */
 async function showDeletePrompt(currentPath, name, type) {
     console.log(`[DEBUG] showDeletePrompt called for ${type}: ${name}`);
     let message = '';
@@ -580,6 +774,11 @@ async function showDeletePrompt(currentPath, name, type) {
     );
 }
 
+/**
+ * Formats file size in bytes to a human-readable format.
+ * @param {number} bytes - The size in bytes.
+ * @returns {string} The formatted size string.
+ */
 function formatSize(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -588,6 +787,9 @@ function formatSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+/**
+ * Initializes the page and sets up event listeners.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[DEBUG] DOMContentLoaded fired');
     const promptOverlay = document.getElementById('prompt-overlay');

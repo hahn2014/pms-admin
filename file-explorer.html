@@ -25,52 +25,48 @@
   </nav>
 </header>
 <main>
-  <div class="file-explorer" id="file-explorer" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" data-path="/usb">
+  <div id="file-explorer" class="file-explorer" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" data-path="/usb">
     <h2>File Explorer</h2>
-    <div class="upload-progress hidden" id="upload-progress">
+    <div id="notification" class="notification hidden"></div>
+    <div id="upload-progress" class="upload-progress hidden">
       <progress id="progress-bar" value="0" max="100"></progress>
       <span id="progress-text">Uploading... 0%</span>
     </div>
-    <div class="notification hidden" id="notification"></div>
-    <div class="path-breadcrumbs" id="breadcrumb-path"></div>
+    <div id="breadcrumb-path" class="path-breadcrumbs"></div>
+    <div class="file-explorer-actions">
+      <button id="new-dir-button" class="action-button" onclick="showNewDirectoryPrompt()">
+        <i class="fa-regular fa-folder icon"></i> Create New Directory
+      </button>
+      <button id="upload-button" class="action-button" onclick="showFileUploadPrompt()">
+        <i class="fa-solid fa-upload"></i> Click to Chose File to Upload
+      </button>
+      <span class="centered-text">or drag and drop file into file explorer</span>
+    </div>
     <div class="file-list"></div>
-    <div class="centered-text upload-info">
-      <div class="file-explorer-actions">
-        <button class="action-button tooltip" data-tooltip="Create a New Directory" onclick="showNewDirectoryPrompt()">
-          <i class="fa-solid fa-file-circle-plus"></i>
-          <span>Create New Directory</span>
-        </button>
-        <button class="action-button tooltip" data-tooltip="Upload a New Media File" id="upload-button" onclick="showFileUploadPrompt()">
-          <i class="fa-solid fa-upload"></i>
-          <span>Click to Chose File to Upload</span>
-        </button>
-        <p class="centered-text">or drag and drop file into file explorer</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="prompt-overlay hidden" id="prompt-overlay">
-    <div class="prompt-box">
-      <h3 id="prompt-title">Prompt</h3>
-      <p id="prompt-message"></p>
-      <div id="prompt-input" class="input-group hidden">
-        <input type="text" id="prompt-textbox" placeholder="">
-      </div>
-      <p id="prompt-error" class="error-message"></p>
-      <div class="prompt-buttons">
-        <button id="prompt-confirm">Confirm</button>
-        <button id="prompt-cancel">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="preview-overlay hidden" id="preview-overlay">
-    <div class="preview-box">
-      <button class="close-preview" onclick="hidePreview()">✖</button>
-      <div class="preview-content" id="preview-content"></div>
-    </div>
   </div>
 </main>
+
+<div id="prompt-overlay" class="prompt-overlay hidden">
+  <div class="prompt-box">
+    <h3 id="prompt-title">Prompt</h3>
+    <p id="prompt-message"></p>
+    <div id="prompt-input" class="input-group hidden">
+      <input id="prompt-textbox" type="text" placeholder="Enter text">
+    </div>
+    <p id="prompt-error" class="error-message"></p>
+    <div class="prompt-buttons">
+      <button id="prompt-confirm">Confirm</button>
+      <button id="prompt-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="preview-overlay" class="preview-overlay hidden">
+  <button class="close-preview" onclick="hidePreview()">✖</button>
+  <div class="preview-box">
+    <div id="preview-content" class="preview-content"></div>
+  </div>
+</div>
 <footer>
   <div>Developed by HahnSolo. 1.0 update July 2025</div>
   <button id="dark-mode-toggle">
