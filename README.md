@@ -145,10 +145,15 @@ Before setting up PMS Admin, ensure you have the following:
      ```bash
      pm2 start server.js --name pms-admin
      ```
-   - Access the application at `http://localhost:3000`.
+   - Access the application at `http://localhost:3000` or `http://nas.ip.address:3000`.
    - To make sure the server starts upon reboot:
      ```bash
      pm2 save
+     ```
+       - To stop and remove server:
+     ```bash
+     pm2 stop pms-admin
+     pm2 delete pms-admin
      ```
 
 2. **Option 2: Deploy to a Web Server**:
