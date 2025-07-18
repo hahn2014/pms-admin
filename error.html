@@ -25,9 +25,10 @@
 
 <footer>
     <span>Developed by HahnSolo. 1.0 update July 2025</span>
-    <button id="dark-mode-toggle">Switch to Dark Mode</button>
+    <button id="dark-mode-toggle" aria-label="Switch to dark mode">
+        <i class="fas fa-sun"></i> Switch to Dark Mode
+    </button>
 </footer>
-
 <script>
     // Display error details from query parameters
     document.addEventListener('DOMContentLoaded', () => {
@@ -37,13 +38,6 @@
         document.getElementById('error-status').textContent = `Error ${status}`;
         document.getElementById('error-message').textContent = decodeURIComponent(message);
 
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        darkModeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-        });
-
         // Check session and update nav menu
         if (sessionStorage.getItem('isLoggedIn') === 'true' && sessionStorage.getItem('sessionToken')) {
             const navMenu = document.getElementById('nav-menu');
@@ -51,5 +45,7 @@
         }
     });
 </script>
+
+<script src="src/dark-mode.js"></script>
 </body>
 </html>

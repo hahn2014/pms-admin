@@ -5,6 +5,7 @@
 .ds_store
 .DS_store
 .idea
+nas-stats.json
 
 mock_usb/
 node_modules/

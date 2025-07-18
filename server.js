@@ -12,10 +12,12 @@ const bcrypt = require('bcrypt');
 const isDev = process.env.NODE_ENV === 'development';
 const mediaRoot = process.env.MEDIA_ROOT || '/usb';
 const sessions = new Set(); // Store active session tokens
+const nasStatsPath = path.join(__dirname, 'nas-stats.json');
+const mockNasPath = path.join(__dirname, 'mock_usb');
 
 // Middleware to block access to sensitive files
 app.use((req, res, next) => {
-    const sensitiveFiles = ['users.db', 'media.db', '.env'];
+    const sensitiveFiles = ['users.db', 'media.db', '.env', 'nas-stats.json'];
     const requestedPath = path.basename(req.path);
     if (sensitiveFiles.includes(requestedPath)) {
         if (isDev) console.log(`[DEBUG] Blocked access to sensitive file: ${req.path}`);
@@ -108,6 +110,75 @@ function sendError(res, status, message) {
 app.get('/api/config', (req, res) => {
     if (isDev) console.log('[DEBUG] Serving TMDB API key via /api/config');
     res.json({ tmdbApiKey: process.env.TMDB_API_KEY || '' });
+});
+
+/**
+ * Serves the nas-stats.json file.
+ * @returns {Object} JSON object containing the nas-stats data.
+ */
+app.get('/api/nas-stats', async (req, res) => {
+    try {
+        const stats = await fs.readFile(nasStatsPath, 'utf8');
+        res.json(JSON.parse(stats));
+    } catch (error) {
+        if (isDev) console.error('[DEBUG] Error fetching nas-stats:', error.message);
+        sendError(res, 500, `Failed to fetch nas-stats: ${error.message}`);
+    }
+});
+
+/**
+ * Updates nas-stats.json by removing a deleted duplicate file.
+ * @param {string} deletedFile - Body parameter for the deleted file path.
+ */
+app.post('/api/update-nas-stats', async (req, res) => {
+    const sessionToken = req.headers['x-session-token'];
+    if (!sessionToken || !sessions.has(sessionToken)) {
+        if (isDev) console.log('[DEBUG] Invalid or missing session token');
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { deletedFile } = req.body;
+    if (!deletedFile) {
+        if (isDev) console.log('[DEBUG] Missing deletedFile in request body');
+        return res.status(400).json({ error: 'Missing deletedFile' });
+    }
+
+    try {
+        console.log(`[DEBUG] Updating nas-stats for deleted file: ${deletedFile}`);
+        const stats = await fs.readFile(nasStatsPath, 'utf8');
+        const statsData = JSON.parse(stats);
+
+        // Normalize deletedFile path to match nas-stats.json
+        const normalizedDeletedFile = deletedFile.replace(/^\/usb\//, `${mockNasPath}/`);
+        console.log(`[DEBUG] Normalized deleted file path: ${normalizedDeletedFile}`);
+
+        // Update duplicates array
+        if (statsData.duplicates && Array.isArray(statsData.duplicates)) {
+            statsData.duplicates = statsData.duplicates
+                .map(dup => {
+                    if (dup && typeof dup === 'object' && Array.isArray(dup.locations)) {
+                        // Remove the deleted file from locations
+                        const updatedLocations = dup.locations.filter(loc => loc !== normalizedDeletedFile);
+                        if (updatedLocations.length >= 2) {
+                            // Keep the entry if there are 2 or more locations
+                            return { ...dup, locations: updatedLocations };
+                        }
+                        // Remove the entry entirely if fewer than 2 locations remain
+                        return null;
+                    }
+                    return dup;
+                })
+                .filter(dup => dup !== null); // Remove null entries
+        }
+
+        // Write updated stats back to nas-stats.json
+        await fs.writeFile(nasStatsPath, JSON.stringify(statsData, null, 2));
+        console.log('[DEBUG] nas-stats.json updated successfully');
+        res.json({ message: 'nas-stats updated successfully' });
+    } catch (error) {
+        console.error('[DEBUG] Error updating nas-stats:', error.message);
+        res.status(500).json({ error: `Failed to update nas-stats: ${error.message}` });
+    }
 });
 
 // Serve the root path with index.html
@@ -361,9 +432,9 @@ app.get('/api/media-list', async (req, res) => {
                        tv.show_title, tv.release_year as tv_year, tv.season, tv.episode, tv.episode_title,
                        sng.artist, sng.album, sng.release_year as song_year, sng.song_title
                 FROM media m
-                         LEFT JOIN movies mov ON m.id = mov.media_id
-                         LEFT JOIN tv_shows tv ON m.id = tv.media_id
-                         LEFT JOIN songs sng ON m.id = sng.media_id
+                LEFT JOIN movies mov ON m.id = mov.media_id
+                LEFT JOIN tv_shows tv ON m.id = tv.media_id
+                LEFT JOIN songs sng ON m.id = sng.media_id
             `, (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);

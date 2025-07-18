@@ -10,4 +10,12 @@
 
 .grid-item {
     height: 150px;
+    position: relative;
+}
+
+.daemon-button {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }

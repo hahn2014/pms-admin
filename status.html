@@ -24,30 +24,57 @@
             </nav>
         </header>
         <div class="main-body">
-            <h1 class="centered-header">Server Status</h1>
+            <h1 class="centered-header">Server Daemon Status</h1>
             <div class="grid-container">
                 <div class="grid-item">
                     <h3 id="plex-header">Plex Media Server</h3>
                     <div class="troubleshooter-container">
                         <p id="plex-label">no plex media server daemon was found</p>
-                        <button id="plex-restart" class="fa-solid fa-power-off" onclick="daemonRestart(pms)"> Restart</button>
+                        <button class="daemon-button" id="plex-restart" onclick="daemonRestart(pms)">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Restart</span>
+                        </button>
                     </div>
                 </div>
                 <div class="grid-item">
                     <h3 id="tautulli-header">Tautulli</h3>
-                    <p id="tautulli-label">no tautulli daemon was found</p>
+                    <div class="troubleshooter-container">
+                        <p id="tautulli-label">no tautulli daemon was found</p>
+                        <button class="daemon-button" id="tautulli-restart" onclick="daemonRestart(tau)">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Restart</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="grid-item">
                     <h3 id="overseer-header">Overseer</h3>
-                    <p id="overseer-label">no overseer daemon was found</p>
+                    <div class="troubleshooter-container">
+                        <p id="overseer-label">no overseer daemon was found</p>
+                        <button class="daemon-button" id="overseer-restart" onclick="daemonRestart(ove)">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Restart</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="grid-item">
                     <h3 id="cloudflared-header">Cloudflared</h3>
-                    <p id="cloudflared-label">no cloudflared daemon was found</p>
+                    <div class="troubleshooter-container">
+                        <p id="cloudflared-label">no cloudflared daemon was found</p>
+                        <button class="daemon-button" id="cloudflared-restart" onclick="daemonRestart(clo)">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Restart</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="grid-item">
                     <h3 id="usb-header">Hard Drive Status</h3>
-                    <p id="usb-label">no hard drives found</p>
+                    <div class="troubleshooter-container">
+                        <p id="usb-label">no hard drives found</p>
+                        <button class="daemon-button" id="drives-restart" onclick="daemonRestart(drives)">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Restart</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
