@@ -320,7 +320,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 
-- **@Hahn2014**: Developer of PMS Admin, version 1.0, updated July 2025.
+- **@hahn2014**: Developer of PMS Admin, version 1.0, updated July 2025.
 - **The Movie Database (TMDB)**: For providing movie metadata and images.
 - **Chart.js**: For rendering analytics charts in the NAS Stats feature.
 - **Plex**: For media streaming integration.
