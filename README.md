@@ -1,6 +1,6 @@
-# PMS Admin Web Application
+# <center>PMS Admin Web Application</center>
 
-PMS Admin is a web-based application designed to manage and interact with a Network Attached Storage (NAS) server, providing tools to browse files, view media analytics, and select random movies for streaming via Plex. Built with HTML, CSS, and JavaScript, it offers a user-friendly interface with responsive design and dark mode support. This README provides a comprehensive guide to the application's features, purpose, setup, and configuration.
+<center>PMS Admin is a web-based application designed to manage and interact with a Network Attached Storage (NAS) server, providing tools to browse files, view media analytics, and select random movies for streaming via Plex. Built with HTML, CSS, and JavaScript, it offers a user-friendly interface with responsive design and dark mode support. This README provides a comprehensive guide to the application's features, purpose, setup, and configuration.</center>
 
 ## Table of Contents
 - [Purpose and Use Case](#purpose-and-use-case)
@@ -332,6 +332,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - **FontAwesome**: Great free use icons and button art.
 ---
 
-*Developed by HahnSolo. 1.0 update July 2025*
+*<center>Developed by HahnSolo. 1.0 update July 2025</center>*
 
-[Back to Top](#PMS-Admin-Web-Application)
+[<center>Back to Top</center>](#PMS-Admin-Web-Application)
