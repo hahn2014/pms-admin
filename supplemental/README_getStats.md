@@ -1,6 +1,7 @@
-## <center>getStats Python Script</center>
+<h1 style="text-align: center">getStats Python Script</h1>
+<a name="getStats-Python-Script"></a>
 
-The `getStats.py` file is a supplemental script for pms-admin. If placed in the root directory of the NAS drive mounting points (and each drive is named Media0, Media1, Media2, etc...), the script will scan all available mounted drives for any media file (.mp4, .mkv. .mp3, etc..) and collect 4 points of data to output into a formatted JSON file. 
+<center>The `getStats.py` file is a supplemental script for pms-admin. If placed in the root directory of the NAS drive mounting points (and each drive is named Media0, Media1, Media2, etc...), the script will scan all available mounted drives for any media file (.mp4, .mkv. .mp3, etc..) and collect 4 points of data to output into a formatted JSON file.</center> 
 
 ### Data Collected
 
