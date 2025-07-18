@@ -94,8 +94,11 @@ PMS Admin is tailored for users who need a centralized interface to manage their
      git clone https://github.com/Hahn2014/pms-admin.git
      ```
    - Alternatively, download the ZIP file from the repository and extract it.
+1. **Download supplemental resources**:
+   - [FontAwesome 6+ (Free or Pro)](https://fontawesome.com/)
+   - [Chart.js](https://www.chartjs.org/)
 
-2. **Verify Files**:
+3. **Verify Files**:
    Ensure the following files are present in the project directory:
    - HTML Files
      - `index.html` (login page and landing page)
@@ -131,6 +134,8 @@ PMS Admin is tailored for users who need a centralized interface to manage their
      - `not-found.jpg` (placeholder image)
      - `plex.svg` (Plex logo)
      - `TMDB.svg` (TMDB logo)
+   - Supplemental Scripts
+     - `getStats.py` - Python script to collect data on NAS media storage and disk space analytics into a formatted JSON file
 
 ## Configuration
 
