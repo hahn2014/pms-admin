@@ -6,7 +6,9 @@
     <title>Error - PMS Admin</title>
     <link rel="stylesheet" href="stylesheet/main.css">
     <link rel="stylesheet" href="stylesheet/error.css">
+    <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
     <script src="src/client.js"></script>
+    <script src="src/version.js"></script>
 </head>
 <body>
 <header>
@@ -24,7 +26,7 @@
 </main>
 
 <footer>
-    <span>Developed by HahnSolo. 1.0 update July 2025</span>
+    <span id="dev-line">Developed by HahnSolo. fetching version...</span>
     <button id="dark-mode-toggle" aria-label="Switch to dark mode">
         <i class="fas fa-sun"></i> Switch to Dark Mode
     </button>
@@ -37,6 +39,7 @@
         const message = params.get('message') || 'An error occurred';
         document.getElementById('error-status').textContent = `Error ${status}`;
         document.getElementById('error-message').textContent = decodeURIComponent(message);
+        document.getElementById('dev-line').innerText = `Developed by HahnSolo. 1.01 update July 2025`;
 
         // Check session and update nav menu
         if (sessionStorage.getItem('isLoggedIn') === 'true' && sessionStorage.getItem('sessionToken')) {
@@ -44,8 +47,8 @@
             if (navMenu) navMenu.classList.remove('hidden');
         }
     });
-</script>
 
+</script>
 <script src="src/dark-mode.js"></script>
 </body>
 </html>

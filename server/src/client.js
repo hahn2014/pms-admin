@@ -24,6 +24,7 @@ function login() {
             document.getElementById('nav-menu').classList.add('hidden');
             document.getElementById('username-display').textContent = username;
             errorMessage.textContent = '';
+            initialize(); //fetch version number once logged in.
         })
         .catch(error => {
             errorMessage.textContent = error.message || 'Login failed';

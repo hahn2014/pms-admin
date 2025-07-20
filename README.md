@@ -14,7 +14,7 @@
 - [Running Server](#Running-Server)
 - [Usage](#usage)
 - [Troubleshooting](#troubleshooting)
-- [Upcoming Features](#upcoming-features)
+- [Development Roadmap](#development-roadmap)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -95,7 +95,7 @@ PMS Admin is tailored for users who need a centralized interface to manage their
      ```bash
      git clone https://github.com/Hahn2014/pms-admin.git
      ```
-   - Alternatively, download the ZIP file from the repository and extract it.
+   - Alternatively, download the ZIP file from the [Release Tab](https://github.com/hahn2014/pms-admin/releases/tag/release) and extract it.
 1. **Download supplemental resources**:
    - [FontAwesome 6+ (Free or Pro)](https://fontawesome.com/)
    - [Chart.js](https://www.chartjs.org/)
@@ -120,6 +120,7 @@ PMS Admin is tailored for users who need a centralized interface to manage their
      - `stats.js` (stats and graphing logic)
      - `status.js` (server statuses logic)
      - `tooltip.js` (tooltip helper logic)
+     - `version.js` (webapp version helper logic)
    - CSS Files
      - `error.css` (error page styles)
      - `file-explorer.css` (file explorer styles)
@@ -132,7 +133,7 @@ PMS Admin is tailored for users who need a centralized interface to manage their
    - Resources
      - `error-banner.gif` (error page banner image)
      - `favicon.ico` (tab favicon)
-     - `logo.jpg` (main logo image)
+     - `logo.svg` (main logo image)
      - `not-found.jpg` (placeholder image)
      - `plex.svg` (Plex logo)
      - `TMDB.svg` (TMDB logo)
@@ -151,6 +152,7 @@ PMS Admin is tailored for users who need a centralized interface to manage their
      ```
      NODE_ENV=release
      MEDIA_ROOT=/usb/
+     VER=1.01
      TMDB_API_KEY=your_tmdb_api_key_here
      MONITORED_DRIVES=/dev/sda1,/dev/sdb1,/dev/sdc1
      NAS_SERVER_URL=http://your-nas-server-ip:port
@@ -190,6 +192,8 @@ PMS Admin is tailored for users who need a centralized interface to manage their
 ## Directory Structure
 > [!CAUTION]
 > Ensure your file structure for the server is set up like the following or be sure to modify HTML files with the refactored file structure.
+
+<h3 style="text-align:center">PMS-Admin Server Structure</h3>
 ```
 pms-admin/
 ├── include/
@@ -217,6 +221,42 @@ pms-admin/
 ├── stats.html              # NAS Stats page
 ├── status.html             # Server Status page
 └── users.db                # RSA encrypted user/pass database of accessible users for credential verification
+```
+
+<h3 style="text-align:center">NAS Plex Media File Structure</h3>
+```
+usb/                       # MEDIA_ROOT variable found in .env file declaring root of NAS storage
+├── Media0                 # Storage Disk 0
+├────── Movies             # Movie dir
+├────────── The Avengers (2012).mkv
+├────────── The Avengers Age of Ultron (2015).mkv
+├────── TV Shows           # TV Shows dir
+├────────── The Simpsons (1989)
+├────────────── Season 01
+├────────────────── The Simpsons (1989) - S01E01 - Simpsons Roasting on an Open Fire.mkv
+├────────────────── The Simpsons (1989) - S01E02 - Bart the Genius.mkv
+├────────── Avatar The Last Airbender (2005)
+├────────────── ...        # Additional Seasons for Simpsons
+├────────── ...            # Additional TV Show directories
+├────── Music              # Music dir
+├────────── Avenged Sevenfold
+├────────────── Black Reign
+├────────────────── Mad Hatter.mp3
+├────────────────── Carry On.mp3
+├────────────────── Not Ready to Die.mp3
+├────────────────── Jade Helm.mp3
+├────────────── ...        # Additional Avenged Sevenfold albums
+├────────── ...            # Additional Artist directories
+├────── Photos             # Photos dir
+├────────── Grand Canyon Trip (2018)
+├────────────── Family.NEF
+├────────────── Sunset.NEF
+├────────── ...            # Additional Photo Albums
+├────── Data               # Any other non-media data storage (not indexed by PMS)
+├── Media1                 # Storage Disk 0
+├────── ...                # All disks should be formatted for Plex Media Server as above
+├── ...
+└── getStats.py            # PMS-Admin data analitics collector program
 ```
 
 ## Running Server
@@ -304,7 +344,13 @@ pms-admin/
 - **Bug Reporting**
   - You can submit [a new issue request](https://github.com/hahn2014/pms-admin/issues/new) for any bugs or app breaking crashes found, or alternatively, [fork the repository](#Contributing) and submit your own fix!
 
-## Upcoming Features
+## Development Roadmap
+- [x] Secure user session management registration and login
+  - [x] BCrypt RSA encryption for password hashing
+  - [x] Sqlite3 for database management and responsive data querying
+- [x] Homepage access panel giving a holistic overview of site features
+- [x] NAS media database syncing revamp through sql tables
+- [x] NAS Data Utilization statistics collection revamp with JSON output
 - [ ] Plex Media Server integration with movie picker and media library population.
 - [ ] Tautulli stats integration
 - [ ] Overseer requests integration
@@ -327,13 +373,13 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 
-- **[HahnSolo](https://github.com/hahn2014/)**: Developer of PMS Admin, version 1.0, updated July 2025.
+- **[@hahn2014](https://github.com/hahn2014/)**: Developer of PMS Admin, version 1.0, updated July 2025.
 - **The Movie Database (TMDB)**: For providing movie metadata and images.
 - **Chart.js**: For rendering analytics charts in the NAS Stats feature.
 - **Plex**: For media streaming integration.
 - **FontAwesome**: Great free use icons and button art.
 ---
 
-*<center>Developed by HahnSolo. 1.0 update July 2025</center>*
+*<center>Developed by HahnSolo. 1.01 update July 2025</center>*
 
 [<center>Back to Top</center>](#md-header)

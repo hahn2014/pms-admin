@@ -85,7 +85,7 @@ mediaDb.serialize(() => {
 
 // Session middleware for protected routes
 app.use((req, res, next) => {
-    if (req.path === '/' || req.path === '/index.html' || req.path === '/api/login' || req.path === '/api/stream' || req.path === '/error.html') {
+    if (req.path === '/' || req.path === '/index.html' || req.path === '/api/login' || req.path === '/api/version' || req.path === '/api/stream' || req.path === '/error.html') {
         if (isDev) console.log(`[DEBUG] Bypassing session check for path: ${req.path}`);
         return next();
     }
@@ -114,6 +114,16 @@ function sendError(res, status, message) {
 app.get('/api/config', (req, res) => {
     if (isDev) console.log('[DEBUG] Serving TMDB API key via /api/config');
     res.json({ tmdbApiKey: process.env.TMDB_API_KEY || '' });
+});
+
+/**
+ * Serves the application version from the .env file.
+ * @returns {Object} JSON object containing the version number.
+ */
+app.get('/api/version', (req, res) => {
+    if (isDev) console.log('[DEBUG] Serving version number via /api/version');
+    const version = process.env.VER || 'N/A';
+    res.json({ version });
 });
 
 /**
