@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PMS Admin - File Explorer</title>
+  <link rel="stylesheet" href="stylesheet/main.css">
+  <link rel="stylesheet" href="stylesheet/file-explorer.css">
+  <link rel="stylesheet" href="stylesheet/tooltip.css">
+  <link rel="stylesheet" href="include/fontawesome-free-6.7.2-web/css/all.min.css">
+  <script src="src/client.js"></script>
+  <script src="src/dark-mode.js"></script>
+  <script src="src/version.js"></script>
+</head>
+<body>
+<header>
+  <div class="logo" onclick="navigate('home')">
+    <img src="resources/logo.svg" alt="NAS Logo" style="height: 40px; cursor: pointer;">
+  </div>
+  <nav id="nav-menu" class="nav-menu">
+    <button onclick="navigate('movie-pick')">Movie Picker</button>
+    <button onclick="navigate('nas-stats')">NAS Stats</button>
+    <button onclick="navigate('help')">Help</button>
+    <button onclick="logout()">Logout</button>
+  </nav>
+</header>
+
+<main>
+  <h1 class="centered-header">Help & Documentation</h1>
+  <div class="help-container">
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-header">Introduction <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <p>PMS Admin is a web-based application for managing a Network Attached Storage (NAS) server. It provides tools to browse files, view media analytics, monitor server status, and select random movies for streaming via Plex. Built with HTML, CSS, and JavaScript, it features a responsive design and dark mode support.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Features <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <ul>
+            <li><strong>Secure Login</strong>: Username/password authentication with RSA encryption.</li>
+            <li><strong>Server Monitoring</strong>: Live status for Plex Media Server processes (e.g., plexmediaserver, tautulli).</li>
+            <li><strong>File Explorer</strong>: Browse, upload, rename, and delete files with drag-and-drop support.</li>
+            <li><strong>Media List</strong>: View movies, TV shows, songs, and photos in a tabbed interface.</li>
+            <li><strong>NAS Stats</strong>: Visualize storage usage with charts or tables.</li>
+            <li><strong>Movie Picker</strong>: Random movie recommendations with TMDB metadata and Plex streaming.</li>
+            <li><strong>Dark Mode</strong>: Toggle between light and dark themes.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Prerequisites <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <ul>
+            <li><strong>Web Server</strong>: Apache, Nginx, or Node.js to serve static files.</li>
+            <li><strong>NAS Server</strong>: A NAS with Plex Media Server installed.</li>
+            <li><strong>TMDB API Key</strong>: For movie metadata in Movie Picker.</li>
+            <li><strong>Node.js</strong>: Optional for local development.</li>
+            <li><strong>Browser</strong>: Chrome, Firefox, Edge, or Safari.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Installation <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <h3>Download Files</h3>
+          <p>Clone the repository or download the ZIP from <a href="https://github.com/hahn2014/pms-admin/releases/tag/release" target="_blank">GitHub</a>:</p>
+          <pre><code>git clone https://github.com/Hahn2014/pms-admin.git</code></pre>
+          <p>Download supplemental resources:</p>
+          <ul>
+            <li><a href="https://fontawesome.com/" target="_blank">FontAwesome 6+</a></li>
+            <li><a href="https://www.chartjs.org/" target="_blank">Chart.js</a></li>
+          </ul>
+          <h3>Setup</h3>
+          <ol>
+            <li>Create a <code>.env</code> file in the project root with:
+              <pre><code>
+NODE_ENV=release
+MEDIA_ROOT=/usb/
+VER=1.01
+TMDB_API_KEY=your_tmdb_api_key_here
+MONITORED_DRIVES=/dev/sda1,/dev/sdb1,/dev/sdc1
+NAS_SERVER_URL=http://your-nas-server-ip:port
+PLEX_API_URL=http://your-plex-server-ip:32400
+PLEX_API_TOKEN=your_plex_api_token
+                                </code></pre>
+            </li>
+            <li>Obtain a TMDB API key from <a href="https://www.themoviedb.org/" target="_blank">themoviedb.org</a>.</li>
+            <li>Configure <code>NAS_SERVER_URL</code> and Plex API settings.</li>
+            <li>Secure the <code>.env</code> file to prevent public access.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Running the Server <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <ol>
+            <li>Install Node.js from <a href="https://nodejs.org/" target="_blank">nodejs.org</a>.</li>
+            <li>Navigate to the project directory:
+              <pre><code>cd pms-admin</code></pre>
+            </li>
+            <li>Install pm2:
+              <pre><code>npm install pm2 -g</code></pre>
+            </li>
+            <li>Start the server:
+              <pre><code>pm2 start server.js --name pms-admin</code></pre>
+            </li>
+            <li>Access at <code>http://localhost:3000</code> or your NAS IP.</li>
+            <li>Ensure server restarts on reboot:
+              <pre><code>pm2 save</code></pre>
+            </li>
+          </ol>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Usage <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <ul>
+            <li><strong>Login</strong>: Access via <code>http://localhost:3000</code> and log in.</li>
+            <li><strong>Navigation</strong>: Use the header menu or landing page to access features.</li>
+            <li><strong>File Explorer</strong>: Browse, upload, or manage files with drag-and-drop.</li>
+            <li><strong>Media List</strong>: View media in tabs, refresh for updates.</li>
+            <li><strong>NAS Stats</strong>: Toggle between charts and tables for analytics.</li>
+            <li><strong>Movie Picker</strong>: Get random movie recommendations and stream via Plex.</li>
+            <li><strong>Logout</strong>: End session via the navigation menu.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Troubleshooting <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <ul>
+            <li><strong>Login Issues</strong>: Verify backend and credentials in <code>users.db</code>.</li>
+            <li><strong>File Explorer Errors</strong>: Check <code>MEDIA_ROOT</code> and NAS permissions.</li>
+            <li><strong>Movie Picker Issues</strong>: Validate TMDB API key and network.</li>
+            <li><strong>Charts Not Rendering</strong>: Ensure Chart.js CDN is accessible.</li>
+            <li><strong>Bug Reporting</strong>: Submit issues at <a href="https://github.com/hahn2014/pms-admin/issues/new" target="_blank">GitHub</a>.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Contributing <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <p>Contributions are welcome! To contribute:</p>
+          <ol>
+            <li>Fork the repository.</li>
+            <li>Create a branch: <code>git checkout -b feature/your-feature</code>.</li>
+            <li>Commit changes: <code>git commit -m "Add your feature"</code>.</li>
+            <li>Push: <code>git push origin feature/your-feature</code>.</li>
+            <li>Create a pull request on GitHub.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">Acknowledgements <i class="fas fa-chevron-down"></i></button>
+        <div style="display: none" class="accordion-content">
+          <ul>
+            <li><strong>@hahn2014</strong>: Developer of PMS Admin.</li>
+            <li><strong>TMDB</strong>: Movie metadata and images.</li>
+            <li><strong>Chart.js</strong>: Analytics charts.</li>
+            <li><strong>Plex</strong>: Media streaming integration.</li>
+            <li><strong>FontAwesome</strong>: Icons and button art.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span id="dev-line">Developed by HahnSolo. fetching version...</span>
+  <button id="dark-mode-toggle" aria-label="Switch to dark mode">
+    <i class="fas fa-sun"></i> Switch to Dark Mode
+  </button>
+</footer>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        const isOpen = content.style.display === 'block';
+        document.querySelectorAll('.accordion-content').forEach(c => {
+          c.style.display = 'none';
+          c.previousElementSibling.querySelector('i').classList.replace('fa-chevron-up', 'fa-chevron-down');
+        });
+        if (!isOpen) {
+          content.style.display = 'block';
+          header.querySelector('i').classList.replace('fa-chevron-down', 'fa-chevron-up');
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

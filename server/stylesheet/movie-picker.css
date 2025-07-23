@@ -23,6 +23,7 @@ h1 {
     display: flex;
     align-items: flex-start;
     gap: 1.5rem;
+    transition: background-color 0.5s ease
 }
 
 .movie-poster {
@@ -122,14 +123,19 @@ h1 {
     font-size: 1.5rem;
     font-weight: bold;
     cursor: pointer;
-    clip-path: polygon(50% 0, 85% 35%, 100% 100%, 73% 100%, 34% 100%, 0 100%, 15% 35%);
+    /* clip-path: polygon(50% 0, 85% 35%, 100% 100%, 73% 100%, 34% 100%, 0 100%, 15% 35%); */
+    clip-path: ellipse(50% 100% at 50% 100%);
     border-radius: 15px;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease, transform 0.5s ease;
     z-index: 10;
 }
 
 .something-else-button:hover {
     background-color: #cf7c09;
+}
+
+.something-else-button:hover ~ .movie-panel {
+    background-color: rgb(213, 123, 0.75);
 }
 
 

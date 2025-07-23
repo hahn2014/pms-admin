@@ -373,45 +373,40 @@ app.post('/api/upload', async (req, res) => {
 });
 
 /**
- * Generates media file statistics per drive.
+ * Generates media file statistics per drive from nas-stats.json.
  * @returns {Object} JSON object with drive stats and totals.
  */
 app.get('/api/stats', async (req, res) => {
     try {
-        const drives = await new Promise((resolve, reject) => {
-            mediaDb.all('SELECT drive, COUNT(*) as totalFiles, SUM(size) as totalSize FROM media GROUP BY drive', (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
+        const statsData = await fs.readFile(nasStatsPath, 'utf8');
+        const nasStats = JSON.parse(statsData);
+
+        // Extract storage_breakdown from nas-stats.json
+        const storageBreakdown = nasStats.storage_breakdown;
+
+        // Map storage_breakdown to the expected drives array format
+        const drives = Object.keys(storageBreakdown).map(driveName => ({
+            name: driveName,
+            movies: storageBreakdown[driveName].movies,
+            tvShows: storageBreakdown[driveName].tv_shows,
+            totalFiles: storageBreakdown[driveName].movies + storageBreakdown[driveName].tv_shows + storageBreakdown[driveName].music + storageBreakdown[driveName].photos,
+            totalSize: storageBreakdown[driveName].total_size,
+            driveCapacity: storageBreakdown[driveName].drive_capacity,
+            freeSpace: storageBreakdown[driveName].free_space
+        }));
+
+        // Calculate total files across all drives
+        const totalFiles = nasStats.total_files;
+
+        // Return the formatted response
+        res.json({
+            drives,
+            totalFiles,
+            generatedDate: nasStats.generated_on
         });
-        const movies = await new Promise((resolve, reject) => {
-            mediaDb.all('SELECT drive, COUNT(*) as movieCount FROM media JOIN movies ON media.id = movies.media_id GROUP BY drive', (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        });
-        const tvShows = await new Promise((resolve, reject) => {
-            mediaDb.all('SELECT drive, COUNT(*) as tvShowCount FROM media JOIN tv_shows ON media.id = tv_shows.media_id GROUP BY drive', (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        });
-        const stats = drives.map(drive => {
-            const movieData = movies.find(m => m.drive === drive.drive) || { movieCount: 0 };
-            const tvShowData = tvShows.find(t => t.drive === drive.drive) || { tvShowCount: 0 };
-            return {
-                name: drive.drive,
-                movies: movieData.movieCount,
-                tvShows: tvShowData.tvShowCount,
-                totalFiles: drive.totalFiles,
-                totalSize: drive.totalSize / (1024 * 1024 * 1024),
-                driveCapacity: 1000, // Fixed capacity assumption (1000 GiB)
-                freeSpace: 1000 - (drive.totalSize / (1024 * 1024 * 1024))
-            };
-        });
-        res.json({ drives: stats, totalFiles: stats.reduce((sum, d) => sum + d.totalFiles, 0), generatedDate: new Date().toISOString() });
     } catch (error) {
-        sendError(res, 500, 'Failed to fetch stats');
+        if (isDev) console.error('[DEBUG] Error fetching stats from nas-stats.json:', error.message);
+        sendError(res, 500, `Failed to fetch stats: ${error.message}`);
     }
 });
 
@@ -496,16 +491,23 @@ app.post('/api/refresh-media', async (req, res) => {
         function parseMediaFile(fileName, filePath, drive) {
             const extension = path.extname(fileName).toLowerCase();
             const baseName = path.basename(fileName, extension);
+            // Extract the MediaX drive name (e.g., Media0, Media1) from the file path
+            const driveMatch = filePath.match(/\/usb\/(Media\d+)/); // note this regex will not work when using the mock_usb/ testing drive, result in null
+            const mediaDrive = driveMatch ? driveMatch[1] : drive;
+
             if (extension.match(/\.(mp4|mkv|avi|mov)$/)) {
-                const tvShowMatch = baseName.match(/^(.*) S(\d{2})E(\d{2}) (.*)$/i);
+                const tvShowMatch = baseName.match(/^(.*?)(\s*\(\d{4}\))?(\s*-)?\s*S(\d{2})E(\d{2})\s*-\s*(.*)$/i);
                 if (tvShowMatch) {
+                    const showTitle = tvShowMatch[1].trim();
+                    const releaseYear = tvShowMatch[2] ? parseInt(tvShowMatch[2].match(/\d{4}/)[0]) : null;
+                    const episodeTitle = tvShowMatch[6].trim();
                     return {
                         type: 'tv_show',
-                        show_title: tvShowMatch[1].trim(),
-                        season: parseInt(tvShowMatch[2]),
-                        episode: parseInt(tvShowMatch[3]),
-                        episode_title: tvShowMatch[4].trim(),
-                        release_year: null
+                        show_title: showTitle,
+                        season: parseInt(tvShowMatch[4]),
+                        episode: parseInt(tvShowMatch[5]),
+                        episode_title: episodeTitle,
+                        release_year: releaseYear
                     };
                 } else {
                     const movieMatch = baseName.match(/^(.*) \((\d{4})\)$/i);
@@ -513,7 +515,8 @@ app.post('/api/refresh-media', async (req, res) => {
                         return {
                             type: 'movie',
                             title: movieMatch[1].trim(),
-                            release_year: parseInt(movieMatch[2])
+                            release_year: parseInt(movieMatch[2]),
+                            drive: mediaDrive
                         };
                     }
                 }
@@ -525,7 +528,8 @@ app.post('/api/refresh-media', async (req, res) => {
                         artist: songMatch[1].trim(),
                         album: songMatch[2].trim(),
                         song_title: songMatch[3].trim(),
-                        release_year: null
+                        release_year: null,
+                        drive: mediaDrive
                     };
                 }
             }
@@ -547,7 +551,7 @@ app.post('/api/refresh-media', async (req, res) => {
                             mediaFiles.push({
                                 type: mediaInfo.type,
                                 file_path: path.isAbsolute(mediaRoot) ? fullPath.replace(mediaRoot, '/usb') : fullPath.replace(path.join(__dirname, mediaRoot), '/usb'),
-                                drive: drive,
+                                drive: mediaInfo.drive || drive,
                                 size: stats.size,
                                 extension: path.extname(item.name).toLowerCase(),
                                 details: mediaInfo

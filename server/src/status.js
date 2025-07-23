@@ -146,7 +146,6 @@ async function fetchServiceStatuses() {
         }, 30000);
     } catch (error) {
         console.error('Error fetching service statuses:', error);
-        alert('Failed to fetch service statuses: ' + error.message);
     }
 }
 
@@ -238,11 +237,10 @@ async function restartService(service) {
             throw new Error('Failed to restart service');
         }
         const data = await response.json();
-        alert(data.message);
+        console.log(data.message);
         await fetchServiceStatuses(); // Refresh statuses after restart
     } catch (error) {
         console.error(`Error restarting ${service}:`, error);
-        alert(`Failed to restart ${service}: ${error.message}`);
     }
 }
 
@@ -265,7 +263,6 @@ async function rebootServer() {
         // The server will redirect to error.html with "Server offline" message
     } catch (error) {
         console.error('Error initiating reboot:', error);
-        alert(`Failed to reboot server: ${error.message}`);
     }
 }
 

@@ -77,6 +77,8 @@ function navigate(page) {
         window.location.href = 'media-list.html';
     } else if (page === 'server-status') {
         window.location.href = 'status.html';
+    } else if (page === 'help') {
+        window.location.href = 'help.html';
     } else {
         alert(`Navigating to ${page}`);
         const navMenu = document.getElementById('nav-menu');

@@ -1,0 +1,131 @@
+.help-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.accordion-item {
+    background-color: var(--item-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.accordion-header {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: var(--button-text-color);
+    padding: 1rem;
+    border: none;
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.accordion-header:hover {
+    background-color: var(--secondary-color);
+}
+
+.accordion-header i {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.accordion-header i.fa-chevron-up {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    display: none;
+    padding: 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.accordion-content p, .accordion-content ul, .accordion-content ol {
+    margin: 0 0 1rem;
+}
+
+.accordion-content ul, .accordion-content ol {
+    padding-left: 1.5rem;
+}
+
+.accordion-content li {
+    margin-bottom: 0.5rem;
+}
+
+.accordion-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.accordion-content a:hover {
+    text-decoration: underline;
+}
+
+.accordion-content pre {
+    background-color: var(--secondary-background-color);
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+}
+
+.accordion-content code {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.accordion-content h3 {
+    color: var(--primary-color);
+    margin: 1rem 0 0.5rem;
+    font-size: 1.3rem;
+}
+
+.centered-header {
+    text-align: center;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+/* Mobile Formatting */
+@media (max-width: 768px) {
+    .help-container {
+        padding: 0.5rem;
+    }
+
+    .centered-header {
+        font-size: 1.5rem;
+    }
+
+    .accordion-header {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .accordion-content {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+
+    .accordion-content pre {
+        font-size: 0.8rem;
+    }
+
+    .accordion-content h3 {
+        font-size: 1.1rem;
+    }
+}
